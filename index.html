@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APEX FORGE</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Forge" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="theme-color" content="#5856d6" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      min-height: 100vh;
+      font-size: 15px;
+    }
+
+    /* ---- HEADER ---- */
+    .header {
+      background: white;
+      border-bottom: 1px solid #e5e5ea;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo { font-size: 15px; font-weight: 800; letter-spacing: 2px; color: #1d1d1f; }
+    .logo span { color: #5856d6; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .date-chip { display: none; } /* hidden on mobile */
+    .streak-chip {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff9500;
+      background: #fff3e0;
+      padding: 5px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .streak-dots { display: none; } /* hidden on mobile, too cramped */
+
+    /* ---- TABS ---- */
+    .tabs {
+      background: white;
+      border-bottom: 1px solid #e5e5ea;
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 0 4px;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 13px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6e6e73;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tab:hover { color: #1d1d1f; }
+    .tab.active { color: #5856d6; border-bottom-color: #5856d6; font-weight: 700; }
+
+    /* ---- CONTENT ---- */
+    .content { max-width: 960px; margin: 0 auto; padding: 16px 12px 80px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ---- CARDS ---- */
+    .card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #e5e5ea;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #8e8e93;
+      margin-bottom: 12px;
+    }
+
+    /* ---- TODAY TAB ---- */
+    .verdict-card {
+      background: linear-gradient(135deg, #5856d6 0%, #7c3aed 100%);
+      color: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .verdict-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; }
+    .verdict-text { font-size: 14px; line-height: 1.6; }
+
+    /* daily grid: 1 col mobile, 2 col tablet+ */
+    .daily-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 480px) { .daily-grid { grid-template-columns: 1fr 1fr; } }
+    .daily-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #e5e5ea;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+      background: white;
+    }
+    .daily-item.done { background: #f0f0ff; border-color: #c7c6f5; }
+    .daily-item.done .daily-text { text-decoration: line-through; color: #8e8e93; }
+    .checkbox {
+      width: 24px; height: 24px;
+      border-radius: 7px;
+      border: 2px solid #d1d1d6;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      margin-top: 1px;
+    }
+    .done .checkbox { background: #5856d6; border-color: #5856d6; color: white; font-size: 13px; }
+    .time-badge { font-size: 12px; font-weight: 700; color: #5856d6; margin-bottom: 3px; }
+    .daily-text { font-size: 14px; line-height: 1.4; }
+
+    /* ---- TASK ITEMS ---- */
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 12px;
+      border-radius: 12px;
+      border: 1px solid #e5e5ea;
+      background: white;
+      margin-bottom: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .task-item.done { opacity: 0.5; }
+    .task-item.done .task-text { text-decoration: line-through; }
+    .task-content { flex: 1; min-width: 0; }
+    .task-text { font-size: 14px; line-height: 1.5; color: #1d1d1f; }
+    .task-meta { display: flex; gap: 6px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
+    .mentor-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .p-hormozi { background: #f0f0ff; color: #5856d6; }
+    .p-ovens { background: #e3f2fd; color: #1976d2; }
+    .p-cunningham { background: #fce4ec; color: #c62828; }
+    .p-suby { background: #fff8e1; color: #e65100; }
+    .p-clear { background: #e8f5e9; color: #2e7d32; }
+    .biz-pill {
+      font-size: 11px;
+      color: #8e8e93;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: #f5f5f7;
+    }
+
+    /* ---- DAY SELECTOR ---- */
+    .day-selector {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .day-selector::-webkit-scrollbar { display: none; }
+    .day-btn {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #e5e5ea;
+      background: white;
+      color: #6e6e73;
+      white-space: nowrap;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .day-btn.active { background: #5856d6; color: white; border-color: #5856d6; }
+    .day-btn.today-btn { border-color: #ff9500; color: #ff9500; }
+    .day-btn.today-btn.active { background: #ff9500; color: white; border-color: #ff9500; }
+
+    /* ---- BUSINESSES ---- */
+    .biz-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+    @media (min-width: 600px) { .biz-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .biz-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #e5e5ea;
+      padding: 16px;
+    }
+    .biz-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .biz-name { font-size: 16px; font-weight: 700; }
+    .status-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .s-focus { background: #f0f0ff; color: #5856d6; }
+    .s-kill { background: #fce4ec; color: #c62828; }
+    .s-cash { background: #e8f5e9; color: #2e7d32; }
+    .metric-big { font-size: 30px; font-weight: 800; color: #1d1d1f; }
+    .metric-sub { font-size: 12px; color: #8e8e93; margin-bottom: 10px; }
+    .prog-track { background: #f5f5f7; border-radius: 4px; height: 6px; margin-bottom: 6px; }
+    .prog-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .prog-zen { background: #5856d6; }
+    .prog-axon { background: #ff3b30; }
+    .prog-rev { background: #34c759; }
+    .prog-label { font-size: 11px; color: #8e8e93; }
+    .update-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #f5f5f7;
+      border: none;
+      cursor: pointer;
+      color: #5856d6;
+    }
+
+    /* stop grid: 1 col mobile, 3 col desktop */
+    .stop-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 600px) { .stop-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .stop-card {
+      background: #fff5f5;
+      border: 1px solid #fecdd3;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .stop-biz { font-size: 13px; font-weight: 700; color: #c62828; margin-bottom: 4px; }
+    .stop-rule { font-size: 12px; color: #6e6e73; line-height: 1.5; }
+    .stop-date { font-size: 12px; font-weight: 600; color: #ff9500; margin-top: 6px; }
+
+    /* ---- REVIEW ---- */
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .review-stat {
+      background: #f5f5f7;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .review-num { font-size: 28px; font-weight: 800; color: #5856d6; }
+    .review-label { font-size: 11px; color: #6e6e73; margin-top: 3px; line-height: 1.3; }
+    .review-input {
+      width: 52px;
+      padding: 4px 6px;
+      border: 1px solid #e5e5ea;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 6px;
+      background: white;
+    }
+
+    /* ---- GCAL ---- */
+    .gcal-btn {
+      padding: 12px 20px;
+      background: #5856d6;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+    }
+    .cal-event {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid #e5e5ea;
+      border-radius: 10px;
+      margin-top: 8px;
+      cursor: pointer;
+      background: white;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cal-time { font-size: 12px; font-weight: 700; color: #5856d6; min-width: 44px; }
+    .cal-title { font-size: 13px; flex: 1; }
+    .cal-add { font-size: 12px; color: #5856d6; font-weight: 600; white-space: nowrap; }
+
+    /* ---- MENTOR CHAT ---- */
+    .chat-container {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #e5e5ea;
+      overflow: hidden;
+    }
+    .chat-header {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e5ea;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .chat-header-title { font-size: 15px; font-weight: 700; }
+    .chat-header-sub { font-size: 11px; color: #8e8e93; }
+    .api-key-row {
+      display: flex;
+      gap: 6px;
+      padding: 10px 12px;
+      background: #fff8e1;
+      border-bottom: 1px solid #e5e5ea;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .api-key-input {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 1px solid #e5e5ea;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: monospace;
+    }
+    .api-save-btn {
+      padding: 8px 14px;
+      background: #5856d6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .messages {
+      min-height: 260px;
+      max-height: 50vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .msg {
+      max-width: 88%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    .msg-user { background: #5856d6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg-assistant { background: #f5f5f7; color: #1d1d1f; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .msg-assistant strong { color: #5856d6; }
+    .msg-thinking { background: #f5f5f7; color: #8e8e93; align-self: flex-start; font-style: italic; font-size: 13px; }
+    .chat-quick {
+      display: flex;
+      gap: 6px;
+      padding: 10px 12px;
+      border-top: 1px solid #e5e5ea;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .chat-quick::-webkit-scrollbar { display: none; }
+    .quick-btn {
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #e5e5ea;
+      background: white;
+      cursor: pointer;
+      color: #5856d6;
+      white-space: nowrap;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid #e5e5ea;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e5e5ea;
+      border-radius: 10px;
+      font-size: 15px; /* 16px prevents iOS zoom, 15px is fine */
+      resize: none;
+      font-family: inherit;
+      min-height: 42px;
+      -webkit-appearance: none;
+    }
+    .chat-input:focus { outline: none; border-color: #5856d6; }
+    .send-btn {
+      padding: 10px 16px;
+      background: #5856d6;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .send-btn:disabled { opacity: 0.4; }
+
+    /* ---- INSIGHTS ---- */
+    .insight-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #e5e5ea;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .mentor-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .av-hormozi { background: #f0f0ff; color: #5856d6; }
+    .av-ovens { background: #e3f2fd; color: #1976d2; }
+    .av-cunningham { background: #fce4ec; color: #c62828; }
+    .av-suby { background: #fff8e1; color: #e65100; }
+    .av-clear { background: #e8f5e9; color: #2e7d32; }
+    .insight-name { font-size: 13px; font-weight: 700; }
+    .insight-role { font-size: 11px; color: #8e8e93; }
+    .insight-text { font-size: 14px; line-height: 1.6; color: #1d1d1f; }
+
+    /* ---- MODAL ---- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: flex-end; /* slide up from bottom on mobile */
+      justify-content: center;
+      z-index: 200;
+      padding: 0;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px 36px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.12);
+    }
+    @media (min-width: 520px) {
+      .modal-overlay { align-items: center; padding: 20px; }
+      .modal { border-radius: 16px; padding: 28px; }
+    }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: #d1d1d6;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+    @media (min-width: 520px) { .modal-handle { display: none; } }
+    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: #6e6e73; margin-bottom: 16px; }
+    .modal-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e5e5ea;
+      border-radius: 10px;
+      font-size: 16px; /* 16px prevents iOS zoom */
+      margin-bottom: 14px;
+      -webkit-appearance: none;
+    }
+    .modal-btns { display: flex; gap: 10px; }
+    .btn-cancel { flex: 1; padding: 12px; border: 1px solid #e5e5ea; border-radius: 10px; background: white; font-size: 15px; cursor: pointer; font-weight: 600; color: #6e6e73; }
+    .btn-save { flex: 1; padding: 12px; background: #5856d6; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+    /* ---- STREAK DOTS ---- */
+    .streak-dots { display: none; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #e5e5ea; }
+    .dot.done { background: #ff9500; }
+    .dot.today { background: #5856d6; }
+
+    /* ---- MISC ---- */
+    .section-gap { margin-bottom: 12px; }
+    .empty-state { text-align: center; padding: 32px 20px; color: #8e8e93; font-size: 14px; }
+
+    /* ---- DESKTOP OVERRIDES ---- */
+    @media (min-width: 640px) {
+      .content { padding: 24px 20px 40px; }
+      .card { padding: 20px; margin-bottom: 16px; }
+      .streak-dots { display: flex; gap: 4px; }
+      .date-chip { display: block; }
+      .header { padding: 0 24px; }
+      .section-gap { margin-bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">APEX <span>FORGE</span></div>
+  <div class="header-right">
+    <div class="streak-dots" id="streakDots"></div>
+    <div class="streak-chip" id="streakChip">🔥 0 dagen</div>
+    <div class="date-chip" id="dateChip"></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" data-tab="today">Vandaag</div>
+  <div class="tab" data-tab="week">Week</div>
+  <div class="tab" data-tab="businesses">Bedrijven</div>
+  <div class="tab" data-tab="mentor">Mentor</div>
+  <div class="tab" data-tab="inzichten">Inzichten</div>
+</div>
+
+<div class="content">
+
+  <!-- ===== TAB: VANDAAG ===== -->
+  <div class="panel active" id="panel-today">
+
+    <div class="verdict-card" id="todayVerdict">
+      <div class="verdict-label">Forge Oordeel — nu</div>
+      <div class="verdict-text" id="verdictText">Laden...</div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Vandaag afvinken</div>
+      <div class="daily-grid">
+        <div class="daily-item" id="di-checkin" onclick="toggleDaily('checkin')">
+          <div class="checkbox" id="dcb-checkin"></div>
+          <div>
+            <div class="time-badge">08:30</div>
+            <div class="daily-text">Check-in: wat zijn mijn 3 acties vandaag?</div>
+          </div>
+        </div>
+        <div class="daily-item" id="di-report" onclick="toggleDaily('report')">
+          <div class="checkbox" id="dcb-report"></div>
+          <div>
+            <div class="time-badge">21:00</div>
+            <div class="daily-text">Dagrapport: wat heb ik gedaan, wat niet, waarom niet?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Taken van vandaag — <span id="todayDayName"></span></div>
+      <div id="todayTasks"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Stop-criteria — actuele status</div>
+      <div class="stop-grid">
+        <div class="stop-card">
+          <div class="stop-biz">AxonGear</div>
+          <div class="stop-rule">Geen €500 omzet in 4 weken na ads start</div>
+          <div class="stop-date" id="axon-stop-date">Stel startdatum in via Bedrijven</div>
+        </div>
+        <div class="stop-card">
+          <div class="stop-biz">ZENBTW</div>
+          <div class="stop-rule">Geen betalende gebruiker in 8 weken na outreach start</div>
+          <div class="stop-date" id="zen-stop-date">Stel startdatum in via Bedrijven</div>
+        </div>
+        <div class="stop-card" style="background:#fff8e1; border-color:#fde68a;">
+          <div class="stop-biz" style="color:#92400e;">Nieuw idee</div>
+          <div class="stop-rule">Geen demand bewijs in 4 weken voor &lt;€500 → Later-lijst</div>
+          <div class="stop-date" style="color:#92400e;">Altijd van toepassing</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: WEEK ===== -->
+  <div class="panel" id="panel-week">
+
+    <div class="day-selector" id="daySelector"></div>
+
+    <div class="card">
+      <div class="card-title" id="weekDayTitle">Taken</div>
+      <div id="weekTasks"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Wekelijkse review (vrijdag)</div>
+      <div class="review-grid">
+        <div class="review-stat">
+          <div class="review-num" id="rv-contacts">0</div>
+          <div class="review-label">ZENBTW contacten</div>
+          <input type="number" class="review-input" placeholder="0" oninput="updateReview('contacts', this.value)" id="ri-contacts" />
+        </div>
+        <div class="review-stat">
+          <div class="review-num" id="rv-interested">0</div>
+          <div class="review-label">mensen die "ja" zeiden</div>
+          <input type="number" class="review-input" placeholder="0" oninput="updateReview('interested', this.value)" id="ri-interested" />
+        </div>
+        <div class="review-stat">
+          <div class="review-num" id="rv-done">0/14</div>
+          <div class="review-label">taken afgevinkt</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Google Calendar — reminders aanmaken</div>
+      <p style="font-size:13px; color:#6e6e73; margin-bottom:14px;">Klik op een event om het toe te voegen aan je Google Calendar (geen login nodig).</p>
+      <button class="gcal-btn" onclick="renderCalEvents()">Genereer events</button>
+      <div id="calEvents"></div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: BEDRIJVEN ===== -->
+  <div class="panel" id="panel-businesses">
+
+    <div class="biz-grid">
+      <div class="biz-card">
+        <div class="biz-header">
+          <div class="biz-name">ZENBTW</div>
+          <div class="status-pill s-focus">PRIMAIR</div>
+        </div>
+        <div class="metric-big" id="biz-zen-num">0</div>
+        <div class="metric-sub">betalende gebruikers</div>
+        <div class="prog-track"><div class="prog-fill prog-zen" id="biz-zen-bar" style="width:0%"></div></div>
+        <div class="prog-label">Doel: 1 gebruiker (8 weken)</div>
+        <button class="update-btn" onclick="openModal('zen')">Update cijfers</button>
+        <div style="margin-top:10px;">
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:4px;">Outreach gestart op:</div>
+          <input type="date" id="zen-start-input" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:13px;width:100%;" onchange="saveStartDate('zen', this.value)" />
+        </div>
+      </div>
+      <div class="biz-card">
+        <div class="biz-header">
+          <div class="biz-name">AxonGear</div>
+          <div class="status-pill s-kill">KILL ZONE</div>
+        </div>
+        <div class="metric-big" id="biz-axon-num">€0</div>
+        <div class="metric-sub">omzet — doel €500</div>
+        <div class="prog-track"><div class="prog-fill prog-axon" id="biz-axon-bar" style="width:0%"></div></div>
+        <div class="prog-label">€300 spend. Ads gepauzeerd.</div>
+        <button class="update-btn" onclick="openModal('axon')">Update cijfers</button>
+        <div style="margin-top:10px;">
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:4px;">Ads gestart op:</div>
+          <input type="date" id="axon-start-input" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:13px;width:100%;" onchange="saveStartDate('axon', this.value)" />
+        </div>
+      </div>
+      <div class="biz-card">
+        <div class="biz-header">
+          <div class="biz-name">Revaleur</div>
+          <div class="status-pill s-cash">CASHCOW</div>
+        </div>
+        <div class="metric-big" id="biz-rev-num">€3k</div>
+        <div class="metric-sub">omzet / maand — doel €5k</div>
+        <div class="prog-track"><div class="prog-fill prog-rev" id="biz-rev-bar" style="width:60%"></div></div>
+        <div class="prog-label">Max 5 uur/week. Systeem draait.</div>
+        <button class="update-btn" onclick="openModal('revaleur')">Update cijfers</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Stop-criteria — deadlines</div>
+      <div class="stop-grid">
+        <div class="stop-card">
+          <div class="stop-biz">AxonGear</div>
+          <div class="stop-rule">Geen €500 omzet in 4 weken na ads start</div>
+          <div class="stop-date" id="axon-deadline-biz">Vul startdatum in hierboven</div>
+        </div>
+        <div class="stop-card">
+          <div class="stop-biz">ZENBTW</div>
+          <div class="stop-rule">Geen betalende gebruiker in 8 weken na outreach start</div>
+          <div class="stop-date" id="zen-deadline-biz">Vul startdatum in hierboven</div>
+        </div>
+        <div class="stop-card" style="background:#fff8e1; border-color:#fde68a;">
+          <div class="stop-biz" style="color:#92400e;">Nieuw idee</div>
+          <div class="stop-rule">Geen demand bewijs in 4 weken voor &lt;€500 → Later-lijst</div>
+          <div class="stop-date" style="color:#92400e;">Altijd</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: MENTOR ===== -->
+  <div class="panel" id="panel-mentor">
+
+    <div class="chat-container">
+      <div class="chat-header">
+        <div>
+          <div class="chat-header-title">Apex Forge Mentor</div>
+          <div class="chat-header-sub">Hormozi · Ovens · Cunningham · Suby · James Clear</div>
+        </div>
+        <button style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid #e5e5ea;background:white;cursor:pointer;color:#6e6e73;" onclick="clearChat()">Chat wissen</button>
+      </div>
+
+      <div class="api-key-row" id="apiKeyRow">
+        <span style="font-size:12px;color:#92400e;min-width:120px;">🔑 Anthropic API key:</span>
+        <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-..." />
+        <button class="api-save-btn" onclick="saveApiKey()">Opslaan</button>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="msg msg-assistant">
+          <strong>Forge Mentor</strong><br>
+          Klaar. Stel je vraag of upload je resultaten. Ik geef je direct concreet advies — geen vage motivatie, wel harde conclusies.<br><br>
+          Gebruik de snelknoppen hieronder voor veelgestelde vragen, of typ zelf iets.
+        </div>
+      </div>
+
+      <div class="chat-quick">
+        <button class="quick-btn" onclick="quickAsk('Wat is mijn prioriteit vandaag?')">Prioriteit vandaag</button>
+        <button class="quick-btn" onclick="quickAsk('Moet ik AxonGear stoppen?')">AxonGear stop/go</button>
+        <button class="quick-btn" onclick="quickAsk('Hoe bereik ik ZENBTW gebruikers zonder gespammed te worden in communities?')">Outreach aanpak</button>
+        <button class="quick-btn" onclick="quickAsk('Hoe kom ik aan de eerste ZENBTW gebruiker?')">Eerste ZENBTW klant</button>
+        <button class="quick-btn" onclick="quickAsk('Ik heb een nieuw business idee, wat denk je?')">Nieuw idee check</button>
+        <button class="quick-btn" onclick="quickAsk('Dit zijn mijn resultaten van deze week:')">Weekresultaten uploaden</button>
+      </div>
+
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" placeholder="Stel een vraag of beschrijf je resultaten van de week..." rows="1" onkeydown="chatKeydown(event)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
+      </div>
+    </div>
+
+  <!-- MEMORY PANEL (below chat) -->
+  <div class="card" style="margin-top:16px;" id="memoryPanel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;">Wat de mentor over jou weet</div>
+      <button style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #e5e5ea;background:white;cursor:pointer;color:#6e6e73;" onclick="clearMemory()">Geheugen wissen</button>
+    </div>
+    <div id="memoryContent" style="font-size:13px;color:#6e6e73;">Nog geen opgeslagen inzichten. Start een gesprek met de mentor.</div>
+  </div>
+
+  </div>
+
+  <!-- ===== TAB: INZICHTEN ===== -->
+  <div class="panel" id="panel-inzichten">
+
+    <div class="card section-gap">
+      <div class="card-title">Mentor doctrine — wat zij altijd zeggen</div>
+
+      <div class="insight-card" style="border:none;padding:0;margin:0;">
+        <div class="insight-header">
+          <div class="mentor-avatar av-hormozi">AH</div>
+          <div><div class="insight-name">Alex Hormozi</div><div class="insight-role">Schalen · Aanbod · Waarde</div></div>
+        </div>
+        <div class="insight-text">
+          <strong>Jouw Unfair Advantage is bouwen + finance.</strong> Gebruik dat. Een offer dat je markt niet kan weigeren vereist dat jij iets biedt wat anderen niet kunnen. ZENBTW combineert jouw twee sterkste eigenschappen.<br><br>
+          "Je maakt geen geld omdat je geen aanbod hebt. Je hebt een feature, geen aanbod."<br><br>
+          Concrete stap: verkoop niet "een BTW-tool" — verkoop "nooit meer een BTW-boete" voor €X per maand.
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #e5e5ea;margin:16px 0;" />
+
+      <div class="insight-card" style="border:none;padding:0;margin:0;">
+        <div class="insight-header">
+          <div class="mentor-avatar av-ovens">LO</div>
+          <div><div class="insight-name">Leila Hormozi / Ovens</div><div class="insight-role">Systemen · Hiring · Schaalbaar maken</div></div>
+        </div>
+        <div class="insight-text">
+          <strong>Je runt drie businesses tegelijk. Dat is geen ondernemerschap, dat is versnippering.</strong><br><br>
+          "Tot je één ding op systeem hebt staan, ben je in chaos. Chaos schaalt niet."<br><br>
+          Protocol: Revaleur op 5 uur/week systeem zetten. AxonGear stop/go data verzamelen. Daarna ZENBTW 100%.
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #e5e5ea;margin:16px 0;" />
+
+      <div class="insight-card" style="border:none;padding:0;margin:0;">
+        <div class="insight-header">
+          <div class="mentor-avatar av-cunningham">CC</div>
+          <div><div class="insight-name">Codie Sanchez</div><div class="insight-role">Cashflow · Boring Businesses · Data</div></div>
+        </div>
+        <div class="insight-text">
+          <strong>€300 spend, 0 orders. De domme fout is niet stoppen.</strong><br><br>
+          "Stop met geld uitgeven aan iets wat geen demand heeft bewezen. Demand first, dan adverteren."<br><br>
+          Stop-criterium: als mensen niet letterlijk zeggen "wanneer kan ik dit kopen" — is er geen product. Niet meer aan adverteren — eerst demand bewijs van echte mensen.
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #e5e5ea;margin:16px 0;" />
+
+      <div class="insight-card" style="border:none;padding:0;margin:0;">
+        <div class="insight-header">
+          <div class="mentor-avatar av-suby">SS</div>
+          <div><div class="insight-name">Sabri Suby</div><div class="insight-role">Marketing · Conversie · Direct Response</div></div>
+        </div>
+        <div class="insight-text">
+          <strong>Jij haat abstracte marketing maar houdt van data. Dat is je marketing-stijl.</strong><br><br>
+          "De beste marketing is data die pijn bewijst + een oplossing die die pijn wegneemt."<br><br>
+          Voor ZENBTW: "Wist je dat 73% van marketplace-verkopers de KOR-drempel te laat ontdekt? Mijn tool waarschuwt je 30 dagen van tevoren." Dat is jouw marketing-boodschap.
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #e5e5ea;margin:16px 0;" />
+
+      <div class="insight-card" style="border:none;padding:0;margin:0;">
+        <div class="insight-header">
+          <div class="mentor-avatar av-clear">JC</div>
+          <div><div class="insight-name">James Clear</div><div class="insight-role">Gewoontes · Systemen · 1% beter</div></div>
+        </div>
+        <div class="insight-text">
+          <strong>Je bent meer bezig met plannen dan doen. Dat is een gewoonte-probleem.</strong><br><br>
+          "Je stijgt niet tot het niveau van je doelen, je daalt tot het niveau van je systemen."<br><br>
+          Fix: elke dag één concrete output — niet "bezig geweest met X" maar "gedaan: Y". Het dagrapport om 21:00 is je meest waardevolle gewoonte. Zonder uitzondering.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Community outreach — zonder ban, zonder spam</div>
+      <div style="font-size:13px;color:#6e6e73;line-height:1.6;margin-bottom:14px;">
+        Jij bent introvert en communities zijn streng. Dit zijn de enige vier aanpakken die werken:
+      </div>
+
+      <div style="display:grid;gap:12px;">
+        <div style="background:#f0f4ff;border-radius:10px;padding:14px;border-left:3px solid #5856d6;">
+          <div style="font-size:13px;font-weight:700;color:#5856d6;margin-bottom:4px;">1. Waarde-eerst (2 weken, dan DM)</div>
+          <div style="font-size:13px;color:#3d3d3f;line-height:1.6;">
+            Beantwoord 5 vragen per week over KOR/OSS <em>zonder ZENBTW te noemen</em>. Na 2 weken ben je de erkende expert. Dan pas DM sturen: "Ik bouw iets voor dit probleem. Mag ik je 10 min vragen stellen?"
+          </div>
+          <div style="font-size:11px;color:#5856d6;font-weight:600;margin-top:8px;">Kanalen: r/belastingdienst, Facebook Vinted/Etsy NL groepen</div>
+        </div>
+
+        <div style="background:#f0fff4;border-radius:10px;padding:14px;border-left:3px solid #34c759;">
+          <div style="font-size:13px;font-weight:700;color:#2e7d32;margin-bottom:4px;">2. Probleem-post (marktonderzoek + zichtbaarheid)</div>
+          <div style="font-size:13px;color:#3d3d3f;line-height:1.6;">
+            Stel een oprechte vraag: "Hoe houden jullie bij of je de KOR-drempel haalt?" — dit is wat jij al deed op Reddit (3.600 views). Mensen die reageren met "dat doe ik slecht" zijn jouw warme leads. DM ze direct.
+          </div>
+          <div style="font-size:11px;color:#2e7d32;font-weight:600;margin-top:8px;">Bewijs: jouw Reddit post had al reacties zoals "OSS en een hoop gezeik"</div>
+        </div>
+
+        <div style="background:#fff8e1;border-radius:10px;padding:14px;border-left:3px solid #ff9500;">
+          <div style="font-size:13px;font-weight:700;color:#e65100;margin-bottom:4px;">3. Educatieve content zonder product</div>
+          <div style="font-size:13px;color:#3d3d3f;line-height:1.6;">
+            Schrijf: "KOR-drempel berekening: zo doe je het in 5 minuten" — post dit. Geen verwijzing naar ZENBTW. Mensen die dit liken/bewaren zijn jouw doelgroep. Na 48u: DM naar iedereen die reageerde.
+          </div>
+          <div style="font-size:11px;color:#e65100;font-weight:600;margin-top:8px;">Format: LinkedIn post (200 woorden max) + Reddit comment</div>
+        </div>
+
+        <div style="background:#fce4ec;border-radius:10px;padding:14px;border-left:3px solid #c62828;">
+          <div style="font-size:13px;font-weight:700;color:#c62828;margin-bottom:4px;">4. DM script (na reactie — nooit koud)</div>
+          <div style="font-size:13px;color:#3d3d3f;line-height:1.6;">
+            Iemand heeft gereageerd op jouw post? Wacht 24u. Stuur dan:<br>
+            <em>"Hey [naam], ik zag je reactie over [OSS/KOR]. Ik bouw een tool die dit automatisch bijhoudt. Gratis te proberen in ruil voor 15 min feedback. Interesse?"</em><br>
+            Niet meer. Geen pitch, geen prijs, geen features.
+          </div>
+          <div style="font-size:11px;color:#c62828;font-weight:600;margin-top:8px;">Conversie verwachting: 1 op 5 reageert positief bij warme leads</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;font-size:12px;color:#8e8e93;line-height:1.6;">
+        <strong>Wat je nooit doet:</strong> product linken in een post, lid worden van een groep en meteen pitchen, hetzelfde bericht kopiëren naar 10 groepen, "check mijn tool" zeggen zonder context.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Later-lijst (ideeën die wachten tot na augustus 2026)</div>
+      <div style="font-size:13px;color:#6e6e73;line-height:1.8;">
+        • Marktplaats/Vinted monitoring bot (SaaS)<br>
+        • Vinted inventory sync tool<br>
+        • Box 3 tax prep tool<br>
+        • Finance & AI platform (nog te concretiseren)
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#8e8e93;">Nieuw idee? Check drie vragen: (1) Benut het jouw finance + bouw-voordeel? (2) Demand bewijs in 4 weken voor &lt;€500? (3) Wat stop je? Als 3 niet te beantwoorden → Later-lijst.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <input type="number" class="modal-input" id="modal-input" placeholder="Voer waarde in..." inputmode="numeric" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Annuleer</button>
+      <button class="btn-save" onclick="saveModal()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+function gs() { try { return JSON.parse(localStorage.getItem('apexforge_v2') || '{}'); } catch { return {}; } }
+function ss(s) { localStorage.setItem('apexforge_v2', JSON.stringify(s)); }
+let S = gs();
+if (!S.tasks) S.tasks = {};
+if (!S.daily) S.daily = {};
+if (!S.streak) S.streak = [];
+if (!S.metrics) S.metrics = { zen: 0, axon: 0, revaleur: 3000 };
+if (!S.weekly) S.weekly = { contacts: 0, interested: 0 };
+if (!S.chatHistory) S.chatHistory = [];
+if (!S.startDates) S.startDates = {};
+if (!S.memory) S.memory = {
+  // Wat de mentor over Daniel heeft geleerd — groeit over tijd
+  learnings: [],          // [{ date, text }] — inzichten opgeslagen door mentor
+  decisions: [],          // [{ date, text }] — beslissingen die Daniel heeft gemaakt
+  wins: [],               // [{ date, text }] — behaalde resultaten
+  patterns: [],           // [{ date, text }] — terugkerende patronen in gedrag
+  lastSummary: null,      // samenvatting van de laatste week
+};
+ss(S);
+
+// ============ TASKS DATA ============
+const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag'];
+const TASKS = {
+  0: [
+    { id:'ma1', text:'Pauzeer alle AxonGear ads — nul euro uitgeven vandaag.', mentor:'cunningham', biz:'AxonGear' },
+    { id:'ma2', text:'Stuur 5 DM\'s naar mensen die reageerden op jouw Reddit/Facebook posts over KOR/OSS. Tekst: "Hey, ik zag je reactie over OSS. Ik heb een tool gebouwd die dit automatisch bijhoudt. Mag ik het je laten zien? Gratis, 10 minuten."', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'ma3', text:'Revaleur systeem check: alles draaiend? Alleen ingrijpen als iets stuk is. Max 30 min.', mentor:'clear', biz:'Revaleur' },
+  ],
+  1: [
+    { id:'di1', text:'Post in één Nederlandse Facebook-groep (Vinted/Etsy/Shopify verkopers): "Hoe houden jullie bij of je de KOR-drempel haalt?" Geen promo. Noteer alle antwoorden.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'di2', text:'Check Revaleur systeem: freelancer gepubliceerd? Blog live? Niet optimaliseren — alleen onderhouden.', mentor:'clear', biz:'Revaleur' },
+  ],
+  2: [
+    { id:'wo1', text:'🔨 ZENBTW bouwdag — bel of DM één persoon die de tool al heeft gezien. Vraag: "Wat werkt niet? Wat mist er?" Schrijf het letterlijk op.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'wo2', text:'AxonGear demand check: spreek 3 mensen fysiek aan. Vraag: "Heb je ooit last van je arm tijdens het werken?" Als niemand ja zegt zonder suggestie → stop-criterium nadert.', mentor:'hormozi', biz:'AxonGear' },
+  ],
+  3: [
+    { id:'do1', text:'Post op r/belastingdienst of r/ondernemen: stel een vraag over OSS-problemen. Geen pitch. Link ZENBTW alleen als iemand ernaar vraagt.', mentor:'suby', biz:'ZENBTW' },
+    { id:'do2', text:'ZENBTW: follow-up sturen naar iedereen die vorige week reageerde maar nog geen demo heeft gehad.', mentor:'ovens', biz:'ZENBTW' },
+  ],
+  4: [
+    { id:'vr1', text:'Tel je ZENBTW feedback-loop: hoeveel mensen gesproken? Hoeveel "ja"? Minder dan 3 → volgende week verdubbelen.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'vr2', text:'AxonGear stop/go beslissing: €500 omzet bereikt? Doorgaan. Niet bereikt binnen 4 weken? STOPPEN. Geen uitzonderingen.', mentor:'cunningham', biz:'AxonGear' },
+    { id:'vr3', text:'Revaleur check: omzet boven €500 deze week? Nee → wat kost het om te fixen zonder jouw tijd?', mentor:'cunningham', biz:'Revaleur' },
+    { id:'vr4', text:'Weekly review invullen en vragen stellen aan de Mentor over de komende week.', mentor:'clear', biz:'Algemeen' },
+  ],
+};
+const MENTOR_LABELS = { hormozi:'Hormozi', ovens:'Ovens', cunningham:'Cunningham', suby:'Suby', clear:'James Clear' };
+
+// ============ TAB SWITCHING ============
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ INIT ============
+function init() {
+  checkWeekReset();
+  renderDate();
+  renderStreak();
+  renderVerdict();
+  renderDailyTasks();
+  renderTodayTasks();
+  renderDaySelector();
+  renderWeekTasks(getTodayDayIdx());
+  renderMetrics();
+  renderReview();
+  renderStartDates();
+  renderStopDates();
+  loadApiKeyUI();
+  loadChatHistory();
+  renderMemoryPanel();
+}
+
+function getTodayDayIdx() {
+  const d = new Date().getDay();
+  if (d === 0 || d === 6) return 4;
+  return d - 1;
+}
+
+function renderDate() {
+  const now = new Date();
+  document.getElementById('dateChip').textContent = now.toLocaleDateString('nl-NL', { weekday:'short', day:'numeric', month:'short' });
+  document.getElementById('todayDayName').textContent = DAYS[getTodayDayIdx()] || 'Vandaag';
+}
+
+function renderStreak() {
+  const today = todayKey();
+  const dots = document.getElementById('streakDots');
+  dots.innerHTML = '';
+  let streak = 0;
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = d.toISOString().split('T')[0];
+    const div = document.createElement('div');
+    div.className = 'dot' + (k === today ? ' today' : (S.streak.includes(k) ? ' done' : ''));
+    dots.appendChild(div);
+  }
+  // Count current streak
+  let count = 0;
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    if (S.streak.includes(d.toISOString().split('T')[0])) count++;
+    else break;
+  }
+  document.getElementById('streakChip').textContent = '🔥 ' + count + ' ' + (count === 1 ? 'dag' : 'dagen');
+}
+
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+
+function renderVerdict() {
+  const m = S.metrics;
+  let parts = [];
+  if (!m.zen || m.zen === 0) parts.push('ZENBTW: stuur vandaag 5 DM\'s. Geen ads, geen bouwen — mensen aanschrijven.');
+  else parts.push('ZENBTW: ' + m.zen + ' gebruiker(s). Volgende: 5 gebruikers, focus retentie + feedback.');
+  if (m.axon < 500) parts.push('AxonGear: ads gepauzeerd. Geen euro meer tot demand bewijs van echte mensen.');
+  else parts.push('AxonGear: €' + m.axon + ' — stop/go beslissing maken op marge + schaalbaarheid.');
+  parts.push('Revaleur: max 30 min vandaag. Systeem checken, niet optimaliseren.');
+  document.getElementById('verdictText').textContent = parts.join('  ·  ');
+}
+
+function renderDailyTasks() {
+  const today = todayKey();
+  const d = (S.daily[today] || {});
+  ['checkin','report'].forEach(id => {
+    const done = !!d[id];
+    const el = document.getElementById('di-' + id);
+    const cb = document.getElementById('dcb-' + id);
+    if (el) el.className = 'daily-item' + (done ? ' done' : '');
+    if (cb) cb.textContent = done ? '✓' : '';
+  });
+}
+
+function toggleDaily(id) {
+  const today = todayKey();
+  if (!S.daily[today]) S.daily[today] = {};
+  S.daily[today][id] = !S.daily[today][id];
+  markStreak();
+  ss(S);
+  renderDailyTasks();
+}
+
+function markStreak() {
+  const today = todayKey();
+  if (!S.streak.includes(today)) S.streak.push(today);
+  renderStreak();
+}
+
+function renderTodayTasks() {
+  const idx = getTodayDayIdx();
+  renderTaskList('todayTasks', idx);
+}
+
+function renderTaskList(containerId, dayIdx) {
+  const el = document.getElementById(containerId);
+  const tasks = TASKS[dayIdx] || [];
+  if (!tasks.length) { el.innerHTML = '<div class="empty-state">Geen taken gepland voor deze dag.</div>'; return; }
+  el.innerHTML = '';
+  tasks.forEach(t => {
+    const done = !!S.tasks[t.id];
+    const div = document.createElement('div');
+    div.className = 'task-item' + (done ? ' done' : '');
+    div.onclick = () => { S.tasks[t.id] = !S.tasks[t.id]; markStreak(); ss(S); renderTaskList(containerId, dayIdx); renderDaySelector(); renderReview(); if (containerId === 'todayTasks') renderTodayTasks(); else renderWeekTasks(dayIdx); };
+    div.innerHTML = `
+      <div class="checkbox">${done ? '✓' : ''}</div>
+      <div class="task-content">
+        <div class="task-text">${t.text}</div>
+        <div class="task-meta">
+          <span class="mentor-pill p-${t.mentor}">${MENTOR_LABELS[t.mentor]}</span>
+          <span class="biz-pill">${t.biz}</span>
+        </div>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+// ============ WEEK TAB ============
+let activeWeekDay = getTodayDayIdx();
+
+function renderDaySelector() {
+  const el = document.getElementById('daySelector');
+  el.innerHTML = '';
+  DAYS.forEach((day, i) => {
+    const tasks = TASKS[i] || [];
+    const done = tasks.filter(t => S.tasks[t.id]).length;
+    const btn = document.createElement('button');
+    const isToday = i === getTodayDayIdx();
+    btn.className = 'day-btn' + (i === activeWeekDay ? ' active' : '') + (isToday ? ' today-btn' : '');
+    btn.textContent = day + ' ' + done + '/' + tasks.length;
+    if (i === 2) btn.textContent = '🔨 ' + btn.textContent;
+    btn.onclick = () => { activeWeekDay = i; renderDaySelector(); renderWeekTasks(i); };
+    el.appendChild(btn);
+  });
+}
+
+function renderWeekTasks(idx) {
+  document.getElementById('weekDayTitle').textContent = DAYS[idx] + ' — taken';
+  renderTaskList('weekTasks', idx);
+}
+
+// ============ BUSINESSES ============
+function renderMetrics() {
+  const m = S.metrics;
+  document.getElementById('biz-zen-num').textContent = m.zen || 0;
+  document.getElementById('biz-axon-num').textContent = '€' + (m.axon || 0);
+  document.getElementById('biz-rev-num').textContent = '€' + Math.round((m.revaleur || 3000) / 1000 * 10) / 10 + 'k';
+  document.getElementById('biz-zen-bar').style.width = Math.min((m.zen || 0) * 100, 100) + '%';
+  document.getElementById('biz-axon-bar').style.width = Math.min(((m.axon || 0) / 500) * 100, 100) + '%';
+  document.getElementById('biz-rev-bar').style.width = Math.min(((m.revaleur || 0) / 5000) * 100, 100) + '%';
+}
+
+function renderStartDates() {
+  if (S.startDates.zen) document.getElementById('zen-start-input').value = S.startDates.zen;
+  if (S.startDates.axon) document.getElementById('axon-start-input').value = S.startDates.axon;
+}
+
+function saveStartDate(biz, val) {
+  S.startDates[biz] = val;
+  ss(S);
+  renderStopDates();
+}
+
+function renderStopDates() {
+  const addDays = (dateStr, days) => {
+    const d = new Date(dateStr); d.setDate(d.getDate() + days);
+    return d.toLocaleDateString('nl-NL');
+  };
+  const axon = S.startDates.axon;
+  const zen = S.startDates.zen;
+  const axonText = axon ? 'Deadline: ' + addDays(axon, 28) : 'Vul startdatum in via Bedrijven';
+  const zenText = zen ? 'Deadline: ' + addDays(zen, 56) : 'Vul startdatum in via Bedrijven';
+  document.getElementById('axon-stop-date').textContent = axonText;
+  document.getElementById('zen-stop-date').textContent = zenText;
+  document.getElementById('axon-deadline-biz').textContent = axonText;
+  document.getElementById('zen-deadline-biz').textContent = zenText;
+}
+
+// ============ MODAL ============
+let modalTarget = null;
+function openModal(biz) {
+  modalTarget = biz;
+  const cfg = {
+    zen: { title: 'ZENBTW bijwerken', sub: 'Hoeveel betalende gebruikers heb je nu?' },
+    axon: { title: 'AxonGear bijwerken', sub: 'Totale omzet tot nu toe in euro (bijv. 150)' },
+    revaleur: { title: 'Revaleur bijwerken', sub: 'Omzet deze maand in euro (bijv. 3200)' },
+  };
+  document.getElementById('modal-title').textContent = cfg[biz].title;
+  document.getElementById('modal-sub').textContent = cfg[biz].sub;
+  document.getElementById('modal-input').value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-input').focus(), 100);
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function saveModal() {
+  const v = parseFloat(document.getElementById('modal-input').value);
+  if (isNaN(v)) { closeModal(); return; }
+  S.metrics[modalTarget] = v;
+  ss(S);
+  closeModal();
+  renderMetrics();
+  renderVerdict();
+}
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+// ============ REVIEW ============
+function renderReview() {
+  document.getElementById('rv-contacts').textContent = S.weekly.contacts || 0;
+  document.getElementById('rv-interested').textContent = S.weekly.interested || 0;
+  let done = 0, total = 0;
+  Object.values(TASKS).forEach(day => day.forEach(t => { total++; if (S.tasks[t.id]) done++; }));
+  document.getElementById('rv-done').textContent = done + '/' + total;
+}
+function updateReview(key, val) { S.weekly[key] = parseInt(val) || 0; ss(S); renderReview(); }
+
+// ============ GOOGLE CALENDAR ============
+function renderCalEvents() {
+  const container = document.getElementById('calEvents');
+  const now = new Date();
+  const events = [
+    { title: '🔥 Forge check-in: 3 acties vandaag', desc: 'APEX FORGE dagelijkse check-in. Wat zijn mijn 3 concrete acties voor ZENBTW, AxonGear en Revaleur?', h: 8, m: 30, rec: 'RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR' },
+    { title: '📊 Dagrapport invullen', desc: 'Wat heb ik gedaan? Wat niet? Waarom niet? Max 5 minuten.', h: 21, m: 0, rec: 'RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR' },
+    { title: '🔨 ZENBTW Bouwdag (geblokkeerd)', desc: 'Volledig gereserveerd voor ZENBTW. Geen AxonGear, geen Revaleur.', h: 9, m: 0, rec: 'RRULE:FREQ=WEEKLY;BYDAY=WE' },
+    { title: '📋 Weekly Review — Forge', desc: 'ZENBTW contacten tellen. AxonGear go/stop. Revaleur omzet check.', h: 18, m: 0, rec: 'RRULE:FREQ=WEEKLY;BYDAY=FR' },
+  ];
+  container.innerHTML = '';
+  events.forEach(ev => {
+    const s = new Date(now); s.setHours(ev.h, ev.m, 0, 0);
+    if (s < now) s.setDate(s.getDate() + 1);
+    const e = new Date(s); e.setMinutes(e.getMinutes() + 30);
+    const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
+    let url = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+    url += '&text=' + encodeURIComponent(ev.title);
+    url += '&details=' + encodeURIComponent(ev.desc);
+    url += '&dates=' + fmt(s) + '/' + fmt(e);
+    url += '&recur=' + encodeURIComponent(ev.rec);
+    const div = document.createElement('div');
+    div.className = 'cal-event';
+    div.onclick = () => window.open(url, '_blank');
+    div.innerHTML = `<div class="cal-time">${String(ev.h).padStart(2,'0')}:${String(ev.m).padStart(2,'0')}</div><div class="cal-title">${ev.title}</div><div class="cal-add">+ Toevoegen →</div>`;
+    container.appendChild(div);
+  });
+}
+
+// ============ MENTOR CHAT ============
+function buildSystemPrompt() {
+  const mem = S.memory;
+  const memParts = [];
+
+  if (mem.learnings.length > 0) {
+    memParts.push('WAT IK AL WEET OVER DANIEL (opgebouwd over tijd):\n' +
+      mem.learnings.slice(-8).map(l => '- [' + l.date + '] ' + l.text).join('\n'));
+  }
+  if (mem.wins.length > 0) {
+    memParts.push('BEHAALDE RESULTATEN:\n' +
+      mem.wins.slice(-5).map(w => '- [' + w.date + '] ' + w.text).join('\n'));
+  }
+  if (mem.decisions.length > 0) {
+    memParts.push('BESLISSINGEN GEMAAKT:\n' +
+      mem.decisions.slice(-5).map(d => '- [' + d.date + '] ' + d.text).join('\n'));
+  }
+  if (mem.patterns.length > 0) {
+    memParts.push('TERUGKERENDE PATRONEN:\n' +
+      mem.patterns.slice(-5).map(p => '- [' + p.date + '] ' + p.text).join('\n'));
+  }
+
+  const dynamicMemory = memParts.length > 0 ? '\n\n' + memParts.join('\n\n') : '';
+
+  return `Je bent de APEX FORGE Mentor voor Daniel (22 jaar, Finance & Control student, afstuderen augustus 2026).
+
+VASTE CONTEXT OVER DANIEL:
+- Drie businesses: ZENBTW (BTW-tool voor marketplace verkopers, MVP klaar), AxonGear (dropship ergonomische armsteun, €300 spend, 0 orders, ads gepauzeerd), Revaleur (vintage luxury fashion, €3k/maand, 45% marge)
+- Kernzwakte: versnippering, analyse-paralysis, meer plannen dan doen
+- Kernkracht: analytisch, bouwen, finance-kennis, domeinkennis marketplace/BTW
+- Introvert — geen cold calls, wél schriftelijke outreach en data-gedreven aanpak
+- Houdt van bouwen en finance, haat abstracte marketing${dynamicMemory}
+
+MENTOR DOCTRINE (spreek in hun stem wanneer relevant):
+- Hormozi: "Je unfair advantage is bouwen + finance. Gebruik dat. Maak een aanbod dat de markt niet kan weigeren. Verkoop geen feature, verkoop een uitkomst."
+- Ovens: "Eén ding tegelijk. Tot je één business op systeem hebt staan, ben je in chaos."
+- Cunningham/Codie Sanchez: "Demand first, dan adverteren. Stop met geld uitgeven zonder demand bewijs."
+- Sabri Suby: "Data die pijn bewijst + oplossing = marketing. Geen abstracte campagnes. Direct response werkt."
+- James Clear: "Je stijgt niet tot het niveau van je doelen, je daalt tot het niveau van je systemen."
+
+COMMUNITY OUTREACH VOOR INTROVERT (altijd toepassen bij ZENBTW-advies):
+- NOOIT direct pitchen in communities — moderators verbannen je en beschadigt geloofwaardigheid
+- Strategie 1 — Waarde-eerste aanpak: beantwoord 5 vragen over KOR/OSS zonder ZENBTW te noemen. Na 2 weken ben je "de expert". Dan pas DM's.
+- Strategie 2 — Probleem-post: stel een oprechte vraag ("hoe regelen jullie OSS?") — dit is marktonderzoek én zichtbaarheid tegelijk, zoals Daniel al deed op Reddit (3.600 views).
+- Strategie 3 — DM na reactie: iemand reageert op jouw post? Wacht 24u, stuur dan: "Interessante reactie. Ik bouw iets hiervoor. Mag ik je 10 min vragen stellen?" — geen pitch.
+- Strategie 4 — Content zonder product: schrijf een korte uitleg over KOR-drempel berekening. Post dit. Mensen die reageren = warme leads.
+- Kanalen die werken voor ZENBTW: r/belastingdienst, r/ondernemen, Facebook groepen "Vinted Nederland verkopers", "Etsy Nederland", "Shopify NL", LinkedIn posts over marketplace BTW.
+
+STOP-CRITERIA (hard, niet onderhandelbaar):
+- AxonGear: geen €500 omzet in 4 weken na ads start → STOPPEN
+- ZENBTW: geen betalende gebruiker in 8 weken na outreach start → STOPPEN
+- Nieuw idee: geen demand bewijs in 4 weken voor <€500 → Later-lijst
+
+GEHEUGEN-INSTRUCTIE:
+Na elk gesprek, als je iets nieuws leert over Daniel (een resultaat, patroon, beslissing, of inzicht), eindig je antwoord dan met een blok:
+[GEHEUGEN]
+type: learning|win|decision|pattern
+tekst: <één zin wat je geleerd hebt>
+[/GEHEUGEN]
+Dit blok wordt automatisch opgeslagen en je herinnert het de volgende sessie.
+
+GEDRAGSREGELS:
+- Altijd direct en eerlijk, ook als het hard is
+- Altijd eindigen met maximaal 3 concrete acties — niet vager dan "doe X gedurende Y minuten"
+- Bij nieuw idee: check de drie vragen (unfair advantage? demand bewijs <€500? wat stop je?)
+- Grijp in bij versnippering, uitstelgedrag, stop-criterium verschuiven
+- Taal: Nederlands, direct, kort`;
+}
+
+function loadApiKeyUI() {
+  const key = localStorage.getItem('apexforge_apikey');
+  if (key) {
+    document.getElementById('apiKeyRow').style.display = 'none';
+  } else {
+    document.getElementById('apiKeyRow').style.display = 'flex';
+  }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) { alert('Voer een geldige Anthropic API key in (begint met sk-ant-)'); return; }
+  localStorage.setItem('apexforge_apikey', key);
+  document.getElementById('apiKeyRow').style.display = 'none';
+}
+
+function loadChatHistory() {
+  const msgs = document.getElementById('messages');
+  if (S.chatHistory && S.chatHistory.length > 0) {
+    // Render last 10 messages
+    const recent = S.chatHistory.slice(-10);
+    recent.forEach(m => addMessageUI(m.role, m.content, false));
+  }
+}
+
+function addMessageUI(role, content, scroll = true) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + (role === 'user' ? 'user' : 'assistant');
+  div.innerHTML = role === 'assistant' ? content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') : content;
+  msgs.appendChild(div);
+  if (scroll) msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function clearChat() {
+  S.chatHistory = [];
+  ss(S);
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '<div class="msg msg-assistant"><strong>Forge Mentor</strong><br>Chat gewist. Stel je vraag.</div>';
+}
+
+function quickAsk(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const apiKey = localStorage.getItem('apexforge_apikey');
+  if (!apiKey) {
+    document.getElementById('apiKeyRow').style.display = 'flex';
+    alert('Voer eerst je Anthropic API key in.');
+    return;
+  }
+
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+
+  // Build rich context snapshot
+  const m = S.metrics;
+  const today = todayKey();
+  const dailyDone = Object.values(S.daily[today] || {}).filter(Boolean).length;
+  const weekDone = Object.values(S.tasks).filter(Boolean).length;
+  const contextNote = `[Live context — ${today}: ZENBTW=${m.zen||0} gebruikers, AxonGear=€${m.axon||0} omzet, Revaleur=€${m.revaleur||3000}/maand, ZENBTW contacten week=${S.weekly.contacts||0}, geïnteresseerden=${S.weekly.interested||0}, dagelijkse taken gedaan=${dailyDone}/2, taken week afgevinkt=${weekDone}]`;
+  const fullText = contextNote + '\n' + text;
+
+  addMessageUI('user', text);
+  S.chatHistory.push({ role: 'user', content: fullText });
+
+  const thinkingDiv = document.createElement('div');
+  thinkingDiv.className = 'msg msg-thinking';
+  thinkingDiv.textContent = 'Mentor denkt na...';
+  document.getElementById('messages').appendChild(thinkingDiv);
+  document.getElementById('messages').scrollTop = 99999;
+
+  try {
+    const messages = S.chatHistory.map(m => ({ role: m.role, content: m.content }));
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-8',
+        max_tokens: 1200,
+        system: buildSystemPrompt(),
+        messages: messages,
+      }),
+    });
+
+    thinkingDiv.remove();
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      addMessageUI('assistant', '⚠️ API fout: ' + (err.error?.message || resp.status));
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    const data = await resp.json();
+    let reply = data.content[0].text;
+
+    // Extract and save memory blocks
+    const memRegex = /\[GEHEUGEN\]\s*type:\s*(\w+)\s*tekst:\s*(.+?)\s*\[\/GEHEUGEN\]/gs;
+    let memMatch;
+    while ((memMatch = memRegex.exec(reply)) !== null) {
+      const type = memMatch[1].trim();
+      const tekst = memMatch[2].trim();
+      const entry = { date: todayKey(), text: tekst };
+      if (type === 'win') S.memory.wins.push(entry);
+      else if (type === 'decision') S.memory.decisions.push(entry);
+      else if (type === 'pattern') S.memory.patterns.push(entry);
+      else S.memory.learnings.push(entry);
+    }
+    // Strip memory blocks from displayed reply
+    const cleanReply = reply.replace(/\[GEHEUGEN\][\s\S]*?\[\/GEHEUGEN\]/g, '').trim();
+
+    S.chatHistory.push({ role: 'assistant', content: reply });
+    if (S.chatHistory.length > 50) S.chatHistory = S.chatHistory.slice(-50);
+    ss(S);
+    addMessageUI('assistant', cleanReply);
+    if (memMatch !== null || reply !== cleanReply) renderMemoryPanel();
+  } catch (e) {
+    thinkingDiv.remove();
+    addMessageUI('assistant', '⚠️ Verbindingsfout. Controleer je API key en internetverbinding.');
+  }
+
+  document.getElementById('sendBtn').disabled = false;
+}
+
+// ============ MEMORY PANEL ============
+function renderMemoryPanel() {
+  const el = document.getElementById('memoryContent');
+  if (!el) return;
+  const mem = S.memory;
+  const sections = [
+    { key: 'learnings', label: 'Inzichten', color: '#5856d6' },
+    { key: 'wins', label: 'Behaalde resultaten', color: '#34c759' },
+    { key: 'decisions', label: 'Beslissingen', color: '#ff9500' },
+    { key: 'patterns', label: 'Patronen in gedrag', color: '#ff3b30' },
+  ];
+  let html = '';
+  let hasAny = false;
+  sections.forEach(s => {
+    const items = mem[s.key] || [];
+    if (items.length === 0) return;
+    hasAny = true;
+    html += `<div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:${s.color};text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">${s.label}</div>
+      ${items.slice(-5).reverse().map(i => `<div style="font-size:13px;color:#3d3d3f;padding:6px 10px;background:#f5f5f7;border-radius:6px;margin-bottom:4px;"><span style="color:#8e8e93;font-size:11px;">${i.date}</span> ${i.text}</div>`).join('')}
+    </div>`;
+  });
+  el.innerHTML = hasAny ? html : 'Nog geen opgeslagen inzichten. Start een gesprek met de mentor.';
+}
+
+function clearMemory() {
+  if (!confirm('Geheugen wissen? De mentor vergeet alles wat hij over je heeft geleerd.')) return;
+  S.memory = { learnings: [], decisions: [], wins: [], patterns: [], lastSummary: null };
+  ss(S);
+  renderMemoryPanel();
+}
+
+// ============ WEEKLY RESET ============
+function checkWeekReset() {
+  const weekKey = getWeekKey();
+  if (S.lastWeekKey !== weekKey) {
+    S.tasks = {};
+    S.weekly = { contacts: 0, interested: 0 };
+    S.lastWeekKey = weekKey;
+    ss(S);
+  }
+}
+
+function getWeekKey() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(now); mon.setDate(diff);
+  return mon.toISOString().split('T')[0];
+}
+
+init();
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
