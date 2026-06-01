@@ -943,8 +943,10 @@ function setSyncStatus(status) {
 }
 
 let syncTimer = null;
+let _syncReady = false; // only push after pull completes
+
 function syncPush() {
-  if (!sb) return;
+  if (!sb || !_syncReady) return;
   clearTimeout(syncTimer);
   syncTimer = setTimeout(async () => {
     setSyncStatus('syncing');
@@ -1006,14 +1008,11 @@ if (!S.weekly) S.weekly = { contacts: 0, interested: 0 };
 if (!S.chatHistory) S.chatHistory = [];
 if (!S.startDates) S.startDates = {};
 if (!S.memory) S.memory = {
-  // Wat de mentor over Daniel heeft geleerd — groeit over tijd
-  learnings: [],          // [{ date, text }] — inzichten opgeslagen door mentor
-  decisions: [],          // [{ date, text }] — beslissingen die Daniel heeft gemaakt
-  wins: [],               // [{ date, text }] — behaalde resultaten
-  patterns: [],           // [{ date, text }] — terugkerende patronen in gedrag
-  lastSummary: null,      // samenvatting van de laatste week
+  learnings: [], decisions: [], wins: [], patterns: [], lastSummary: null,
 };
-ss(S);
+// Save defaults to localStorage only — do NOT push to Supabase yet
+// syncPull() will run first and remote state wins
+localStorage.setItem('apexforge_v2', JSON.stringify(S));
 
 // ============ TASKS DATA ============
 const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag'];
@@ -1565,7 +1564,11 @@ function getWeekKey() {
 }
 
 initSB();
-syncPull().then(() => { init(); startPolling(); });
+syncPull().then(() => {
+  _syncReady = true; // from now on ss() may push to Supabase
+  init();
+  startPolling();
+});
 
 // Unregister any old service workers to prevent stale cache issues
 if ('serviceWorker' in navigator) {
