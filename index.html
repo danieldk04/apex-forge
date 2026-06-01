@@ -961,14 +961,11 @@ function syncPush() {
 async function syncPull() {
   if (!sb) return;
   try {
-    const { data } = await sb.from('forge_state').select('state, updated_at').eq('user_id', getUserId()).single();
-    if (!data) return;
-    const remoteUpdated = new Date(data.updated_at).getTime();
-    const localUpdated = S.lastUpdated || 0;
-    if (remoteUpdated > localUpdated) {
-      Object.assign(S, data.state);
-      localStorage.setItem('apexforge_v2', JSON.stringify(S));
-    }
+    const { data } = await sb.from('forge_state').select('state').eq('user_id', getUserId()).single();
+    if (!data?.state) return;
+    // Always take remote on pull — remote is source of truth
+    Object.assign(S, data.state);
+    localStorage.setItem('apexforge_v2', JSON.stringify(S));
   } catch(e) {}
 }
 
@@ -981,10 +978,9 @@ function startRealtime() {
       table: 'forge_state',
       filter: `user_id=eq.${getUserId()}`,
     }, payload => {
-      // Another device pushed a change — apply it if it's newer
+      // Another device pushed a change — always apply
       const remote = payload.new.state;
-      const remoteUpdated = new Date(payload.new.updated_at).getTime();
-      if (remoteUpdated > (S.lastUpdated || 0)) {
+      if (remote) {
         Object.assign(S, remote);
         localStorage.setItem('apexforge_v2', JSON.stringify(S));
         // Re-render everything
