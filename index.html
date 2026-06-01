@@ -928,11 +928,10 @@ function initSB() {
   try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) {}
 }
 
-function getUserId() {
-  let id = localStorage.getItem('apexforge_uid');
-  if (!id) { id = crypto.randomUUID(); localStorage.setItem('apexforge_uid', id); }
-  return id;
-}
+// Gebruik een vaste ID "daniel" zodat alle apparaten dezelfde rij syncen
+// Wil je meerdere profielen? Verander dit naar een unieke naam.
+const FIXED_USER_ID = 'daniel-apexforge';
+function getUserId() { return FIXED_USER_ID; }
 
 function setSyncStatus(status) {
   const el = document.getElementById('syncIndicator');
