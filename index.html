@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APEX FORGE</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -530,6 +531,7 @@
   <div class="logo">APEX <span>FORGE</span></div>
   <div class="header-right">
     <div class="streak-dots" id="streakDots"></div>
+    <span id="syncIndicator" style="font-size:11px;color:#8e8e93;"></span>
     <div class="streak-chip" id="streakChip">🔥 0 dagen</div>
     <div class="date-chip" id="dateChip"></div>
   </div>
@@ -917,8 +919,59 @@
 
 <script>
 // ============ STATE ============
+// ============ SUPABASE ============
+const SB_URL = 'https://vztmureskmodkvkxkhmp.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6dG11cmVza21vZGt2a3hraG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjA2OTQsImV4cCI6MjA5NTg5NjY5NH0.p4KSwSXEf5nBASG7ZY5PXoHO-yVvpRyXexfXkbvRjHI';
+let sb = null;
+
+function initSB() {
+  try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) {}
+}
+
+function getUserId() {
+  let id = localStorage.getItem('apexforge_uid');
+  if (!id) { id = crypto.randomUUID(); localStorage.setItem('apexforge_uid', id); }
+  return id;
+}
+
+let syncTimer = null;
+function syncPush() {
+  if (!sb) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    const el = document.getElementById('syncIndicator');
+    if (el) { el.textContent = '↑ sync...'; el.style.color = '#ff9500'; }
+    try {
+      await sb.from('forge_state').upsert({ user_id: getUserId(), state: S, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      if (el) { el.textContent = '✓'; el.style.color = '#34c759'; setTimeout(() => { if(el) el.textContent = ''; }, 2000); }
+    } catch(e) {
+      if (el) { el.textContent = '⚠'; el.style.color = '#ff3b30'; }
+    }
+  }, 800); // debounce — wait 800ms after last change before pushing
+}
+
+async function syncPull() {
+  if (!sb) return;
+  try {
+    const { data } = await sb.from('forge_state').select('state, updated_at').eq('user_id', getUserId()).single();
+    if (!data) return;
+    const remote = data.state;
+    const localUpdated = S.lastUpdated || 0;
+    const remoteUpdated = new Date(data.updated_at).getTime();
+    if (remoteUpdated > localUpdated) {
+      Object.assign(S, remote);
+      localStorage.setItem('apexforge_v2', JSON.stringify(S));
+    }
+  } catch(e) {}
+}
+
+// ============ STATE ============
 function gs() { try { return JSON.parse(localStorage.getItem('apexforge_v2') || '{}'); } catch { return {}; } }
-function ss(s) { localStorage.setItem('apexforge_v2', JSON.stringify(s)); }
+function ss(s) {
+  s.lastUpdated = Date.now();
+  localStorage.setItem('apexforge_v2', JSON.stringify(s));
+  syncPush();
+}
 let S = gs();
 if (!S.tasks) S.tasks = {};
 if (!S.daily) S.daily = {};
@@ -1486,7 +1539,8 @@ function getWeekKey() {
   return mon.toISOString().split('T')[0];
 }
 
-init();
+initSB();
+syncPull().then(() => init());
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
