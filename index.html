@@ -556,24 +556,7 @@
       <div class="verdict-text" id="verdictText">Laden...</div>
     </div>
 
-    <div class="card section-gap">
-      <div class="card-title">Vandaag afvinken</div>
-      <div class="daily-grid">
-        <div class="daily-item" id="di-checkin" onclick="toggleDaily('checkin')">
-          <div class="checkbox" id="dcb-checkin"></div>
-          <div>
-            <div class="time-badge">08:30</div>
-            <div class="daily-text">Check-in: wat zijn mijn 3 acties vandaag?</div>
-          </div>
-        </div>
-        <div class="daily-item" id="di-report" onclick="toggleDaily('report')">
-          <div class="checkbox" id="dcb-report"></div>
-          <div>
-            <div class="time-badge">21:00</div>
-            <div class="daily-text">Dagrapport: wat heb ik gedaan, wat niet, waarom niet?</div>
-          </div>
-        </div>
-      </div>
+    <div class="card section-gap" style="display:none">
     </div>
 
     <div class="card section-gap">
@@ -983,7 +966,7 @@ function startPolling() {
         window._lastPulledAt = remoteTs;
         Object.assign(S, data.state);
         localStorage.setItem('apexforge_v2', JSON.stringify(S));
-        renderVerdict(); renderDailyTasks(); renderTodayTasks();
+        renderVerdict(); renderTodayTasks();
         renderDaySelector(); renderWeekTasks(activeWeekDay);
         renderMetrics(); renderReview(); renderStreak();
         setSyncStatus('ok');
