@@ -1000,28 +1000,41 @@ localStorage.setItem('apexforge_v2', JSON.stringify(S));
 // ============ TASKS DATA ============
 const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag'];
 const TASKS = {
-  0: [
-    { id:'ma1', text:'Pauzeer alle AxonGear ads — nul euro uitgeven vandaag.', mentor:'cunningham', biz:'AxonGear' },
-    { id:'ma2', text:'Stuur 5 DM\'s naar mensen die reageerden op jouw Reddit/Facebook posts over KOR/OSS. Tekst: "Hey, ik zag je reactie over OSS. Ik heb een tool gebouwd die dit automatisch bijhoudt. Mag ik het je laten zien? Gratis, 10 minuten."', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'ma3', text:'Revaleur systeem check: alles draaiend? Alleen ingrijpen als iets stuk is. Max 30 min.', mentor:'clear', biz:'Revaleur' },
+  0: [ // MAANDAG — week opstarten
+    { id:'ma1', text:'[30 min] Maak een lijst van 20 marketplace-verkopers die actief zijn in NL Vinted/Etsy/Bol-groepen. Naam + contactkanaal noteren. Dit is je outreach-pipeline voor de hele week.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'ma2', text:'[45 min] Stuur 10 persoonlijke DMs naar mensen die reageerden op KOR/OSS-posts. Tekst: "Hey [naam], zag je reactie over OSS. Ik bouw een tool die dit automatisch bijhoudt — mag ik het je laten zien? Gratis, 15 min." Geen copy-paste — personaliseer elke bericht.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'ma3', text:'[20 min] Beantwoord 3 vragen over KOR/BTW in FB-groepen of Reddit zonder ZENBTW te noemen. Doel: zichtbaarheid als expert opbouwen.', mentor:'suby', biz:'ZENBTW' },
+    { id:'ma4', text:'[15 min] Revaleur check: nieuwe items live? Prijzen nog correct? Alleen ingrijpen als iets stuk is. Daarna stoppen.', mentor:'clear', biz:'Revaleur' },
+    { id:'ma5', text:'[20 min] AxonGear: spreek vandaag 3 mensen fysiek aan (collega, studiegenoot, iemand thuis). Vraag: "Heb je last van je arm/pols bij het werken?" Noteer reacties letterlijk.', mentor:'cunningham', biz:'AxonGear' },
   ],
-  1: [
-    { id:'di1', text:'Post in één Nederlandse Facebook-groep (Vinted/Etsy/Shopify verkopers): "Hoe houden jullie bij of je de KOR-drempel haalt?" Geen promo. Noteer alle antwoorden.', mentor:'ovens', biz:'ZENBTW' },
-    { id:'di2', text:'Check Revaleur systeem: freelancer gepubliceerd? Blog live? Niet optimaliseren — alleen onderhouden.', mentor:'clear', biz:'Revaleur' },
+  1: [ // DINSDAG — outreach verdiepen
+    { id:'di1', text:'[30 min] Post in 2 verschillende FB-groepen (Vinted NL verkopers + Etsy Nederland): "Hoe houden jullie bij of je de KOR-drempel haalt?" Geen promo. Kopieer alle reacties naar een notitie.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'di2', text:'[45 min] Follow-up sturen naar iedereen die gisteren niet heeft gereageerd op je DM. Nieuw bericht: "Hey, stuurde je gisteren een berichtje — snapte het misschien verkeerd. In het kort: ik zoek 3 personen die gratis mijn BTW-tool willen testen. Interesse?"', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'di3', text:'[30 min] Schrijf één LinkedIn-post (200 woorden): "Wist je dat 7 op de 10 Vinted-verkopers de KOR-drempel te laat ontdekt?" Geen link, geen pitch. Alleen het probleem benoemen. Post en noteer hoeveel reacties.', mentor:'suby', biz:'ZENBTW' },
+    { id:'di4', text:'[20 min] ZENBTW: open je eigen tool en test één klantscenario alsof je een nieuwe gebruiker bent. Wat is onduidelijk? Schrijf 3 verbeterpunten op.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'di5', text:'[15 min] Revaleur: check of freelancer of systeem nog draait. Eén melding afhandelen indien aanwezig. Niet langer dan 15 min besteden.', mentor:'clear', biz:'Revaleur' },
   ],
-  2: [
-    { id:'wo1', text:'🔨 ZENBTW bouwdag — bel of DM één persoon die de tool al heeft gezien. Vraag: "Wat werkt niet? Wat mist er?" Schrijf het letterlijk op.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'wo2', text:'AxonGear demand check: spreek 3 mensen fysiek aan. Vraag: "Heb je ooit last van je arm tijdens het werken?" Als niemand ja zegt zonder suggestie → stop-criterium nadert.', mentor:'hormozi', biz:'AxonGear' },
+  2: [ // WOENSDAG — bouwdag ZENBTW
+    { id:'wo1', text:'[60 min] ZENBTW bouwdag — implementeer het meest gevraagde verbeterpunt uit je feedback van ma/di. Eén ding, af maken, live zetten.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'wo2', text:'[30 min] Bel of DM één persoon die de tool al heeft gezien. Vraag: "Wat is het eerste wat je zou veranderen?" Schrijf het woord-voor-woord op. Dit is je productrichting.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'wo3', text:'[30 min] Stuur 5 nieuwe DMs naar mensen van je lijst van maandag die je nog niet hebt benaderd.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'wo4', text:'[30 min] Finance verdieping: lees één artikel over OSS-aangifte of KOR-wetgeving. Gebruik dit als content voor volgende week. Sla de kernpunten op.', mentor:'suby', biz:'ZENBTW' },
+    { id:'wo5', text:'[20 min] AxonGear: vraag in 2 online communities (Reddit r/thuiswerken of FB thuiswerk-groepen) of mensen ergonomische problemen hebben. Geen product noemen — alleen luisteren.', mentor:'cunningham', biz:'AxonGear' },
   ],
-  3: [
-    { id:'do1', text:'Post op r/belastingdienst of r/ondernemen: stel een vraag over OSS-problemen. Geen pitch. Link ZENBTW alleen als iemand ernaar vraagt.', mentor:'suby', biz:'ZENBTW' },
-    { id:'do2', text:'ZENBTW: follow-up sturen naar iedereen die vorige week reageerde maar nog geen demo heeft gehad.', mentor:'ovens', biz:'ZENBTW' },
+  3: [ // DONDERDAG — content + conversie
+    { id:'do1', text:'[30 min] Post op r/belastingdienst: stel een oprechte vraag over OSS of KOR. Geen pitch. Reageer op elk antwoord. Mensen die "dit is een probleem" zeggen → stuur DM.', mentor:'suby', biz:'ZENBTW' },
+    { id:'do2', text:'[45 min] Stuur demo-uitnodiging naar iedereen die positief reageerde deze week: "Ik heb een update gedaan op de tool. Zou je 20 min hebben voor een snelle demo? Ik laat je alles zien en verwerk je feedback direct." Plan een moment in.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'do3', text:'[20 min] Schrijf je eerste FAQ-pagina voor ZENBTW: 5 vragen die je deze week het meest hebt gekregen. Dit wordt ook je sales-script.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'do4', text:'[20 min] Revaleur: check verkoopstatistieken van de week. Welk item verkoopt het best? Zoek 2 vergelijkbare items om toe te voegen aan de voorraad.', mentor:'cunningham', biz:'Revaleur' },
+    { id:'do5', text:'[15 min] Mentor-check: open het Mentor-tabblad en stel de vraag "Dit zijn mijn resultaten van deze week:" + vul in wat je hebt gedaan. Doe wat hij zegt.', mentor:'clear', biz:'Algemeen' },
   ],
-  4: [
-    { id:'vr1', text:'Tel je ZENBTW feedback-loop: hoeveel mensen gesproken? Hoeveel "ja"? Minder dan 3 → volgende week verdubbelen.', mentor:'ovens', biz:'ZENBTW' },
-    { id:'vr2', text:'AxonGear stop/go beslissing: €500 omzet bereikt? Doorgaan. Niet bereikt binnen 4 weken? STOPPEN. Geen uitzonderingen.', mentor:'cunningham', biz:'AxonGear' },
-    { id:'vr3', text:'Revaleur check: omzet boven €500 deze week? Nee → wat kost het om te fixen zonder jouw tijd?', mentor:'cunningham', biz:'Revaleur' },
-    { id:'vr4', text:'Weekly review invullen en vragen stellen aan de Mentor over de komende week.', mentor:'clear', biz:'Algemeen' },
+  4: [ // VRIJDAG — review + volgende week plannen
+    { id:'vr1', text:'[20 min] Tel ZENBTW-week: hoeveel DMs gestuurd? Hoeveel reacties? Hoeveel demos gepland? Als minder dan 3 positieve reacties → volgende week outreach verdubbelen.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'vr2', text:'[15 min] AxonGear stop/go: hoeveel demand-bewijs heb je verzameld (mensen die "ja, dat heb ik" zeiden zonder suggestie)? Minder dan 5 → stop-criterium nadert. Meer dan 10 → overweeg herstart ads.', mentor:'cunningham', biz:'AxonGear' },
+    { id:'vr3', text:'[15 min] Revaleur weekcheck: omzet boven €750 deze week? Zo niet — wat is de bottleneck? Max 15 min aan besteden, daarna loslaten.', mentor:'cunningham', biz:'Revaleur' },
+    { id:'vr4', text:'[30 min] Plan volgende week: schrijf voor maandag je top-3 ZENBTW-acties op. Niet meer dan 3. Specificeer: wie ga je benaderen, wat ga je bouwen, wat ga je posten.', mentor:'clear', biz:'Algemeen' },
+    { id:'vr5', text:'[20 min] Stuur één bedankbericht naar iedereen die deze week feedback heeft gegeven op ZENBTW. Klein gebaar, grote impact op relatie.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'vr6', text:'[15 min] Persoonlijke reflectie: wat heb je deze week uitgesteld en waarom? Schrijf het op — niet voor mij, voor jezelf. Patroon herkennen = het doorbreken.', mentor:'clear', biz:'Algemeen' },
   ],
 };
 const MENTOR_LABELS = { hormozi:'Hormozi', ovens:'Ovens', cunningham:'Cunningham', suby:'Suby', clear:'James Clear' };
