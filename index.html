@@ -969,33 +969,25 @@ async function syncPull() {
   } catch(e) {}
 }
 
-function startRealtime() {
-  if (!sb) return;
-  sb.channel('forge-sync')
-    .on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'forge_state',
-      filter: `user_id=eq.${getUserId()}`,
-    }, payload => {
-      // Another device pushed a change — always apply
-      const remote = payload.new.state;
-      if (remote) {
-        Object.assign(S, remote);
+function startPolling() {
+  // Poll every 10 seconds — simpler and more reliable than Realtime
+  setInterval(async () => {
+    if (!sb) return;
+    try {
+      const { data } = await sb.from('forge_state').select('state, updated_at').eq('user_id', getUserId()).single();
+      if (!data?.state) return;
+      const remoteTs = new Date(data.updated_at).getTime();
+      if (remoteTs > (window._lastPulledAt || 0)) {
+        window._lastPulledAt = remoteTs;
+        Object.assign(S, data.state);
         localStorage.setItem('apexforge_v2', JSON.stringify(S));
-        // Re-render everything
-        renderVerdict();
-        renderDailyTasks();
-        renderTodayTasks();
-        renderDaySelector();
-        renderWeekTasks(activeWeekDay);
-        renderMetrics();
-        renderReview();
-        renderStreak();
-        setSyncStatus('live');
+        renderVerdict(); renderDailyTasks(); renderTodayTasks();
+        renderDaySelector(); renderWeekTasks(activeWeekDay);
+        renderMetrics(); renderReview(); renderStreak();
+        setSyncStatus('ok');
       }
-    })
-    .subscribe();
+    } catch(e) {}
+  }, 10000);
 }
 
 // ============ STATE ============
@@ -1573,11 +1565,11 @@ function getWeekKey() {
 }
 
 initSB();
-syncPull().then(() => { init(); startRealtime(); });
+syncPull().then(() => { init(); startPolling(); });
 
-// Register service worker for PWA
+// Unregister any old service workers to prevent stale cache issues
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
 }
 </script>
 </body>
