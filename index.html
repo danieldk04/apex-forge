@@ -934,20 +934,29 @@ function getUserId() {
   return id;
 }
 
+function setSyncStatus(status) {
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  if (status === 'syncing') { el.textContent = '↑'; el.style.color = '#ff9500'; }
+  else if (status === 'ok') { el.textContent = '✓'; el.style.color = '#34c759'; setTimeout(() => { el.textContent = ''; }, 2000); }
+  else if (status === 'error') { el.textContent = '⚠'; el.style.color = '#ff3b30'; }
+  else if (status === 'live') { el.textContent = '●'; el.style.color = '#34c759'; }
+}
+
 let syncTimer = null;
 function syncPush() {
   if (!sb) return;
   clearTimeout(syncTimer);
   syncTimer = setTimeout(async () => {
-    const el = document.getElementById('syncIndicator');
-    if (el) { el.textContent = '↑ sync...'; el.style.color = '#ff9500'; }
+    setSyncStatus('syncing');
     try {
-      await sb.from('forge_state').upsert({ user_id: getUserId(), state: S, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
-      if (el) { el.textContent = '✓'; el.style.color = '#34c759'; setTimeout(() => { if(el) el.textContent = ''; }, 2000); }
-    } catch(e) {
-      if (el) { el.textContent = '⚠'; el.style.color = '#ff3b30'; }
-    }
-  }, 800); // debounce — wait 800ms after last change before pushing
+      await sb.from('forge_state').upsert(
+        { user_id: getUserId(), state: S, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      );
+      setSyncStatus('ok');
+    } catch(e) { setSyncStatus('error'); }
+  }, 800);
 }
 
 async function syncPull() {
@@ -955,14 +964,43 @@ async function syncPull() {
   try {
     const { data } = await sb.from('forge_state').select('state, updated_at').eq('user_id', getUserId()).single();
     if (!data) return;
-    const remote = data.state;
-    const localUpdated = S.lastUpdated || 0;
     const remoteUpdated = new Date(data.updated_at).getTime();
+    const localUpdated = S.lastUpdated || 0;
     if (remoteUpdated > localUpdated) {
-      Object.assign(S, remote);
+      Object.assign(S, data.state);
       localStorage.setItem('apexforge_v2', JSON.stringify(S));
     }
   } catch(e) {}
+}
+
+function startRealtime() {
+  if (!sb) return;
+  sb.channel('forge-sync')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'forge_state',
+      filter: `user_id=eq.${getUserId()}`,
+    }, payload => {
+      // Another device pushed a change — apply it if it's newer
+      const remote = payload.new.state;
+      const remoteUpdated = new Date(payload.new.updated_at).getTime();
+      if (remoteUpdated > (S.lastUpdated || 0)) {
+        Object.assign(S, remote);
+        localStorage.setItem('apexforge_v2', JSON.stringify(S));
+        // Re-render everything
+        renderVerdict();
+        renderDailyTasks();
+        renderTodayTasks();
+        renderDaySelector();
+        renderWeekTasks(activeWeekDay);
+        renderMetrics();
+        renderReview();
+        renderStreak();
+        setSyncStatus('live');
+      }
+    })
+    .subscribe();
 }
 
 // ============ STATE ============
@@ -1540,7 +1578,7 @@ function getWeekKey() {
 }
 
 initSB();
-syncPull().then(() => init());
+syncPull().then(() => { init(); startRealtime(); });
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
