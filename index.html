@@ -513,6 +513,67 @@
     .section-gap { margin-bottom: 12px; }
     .empty-state { text-align: center; padding: 32px 20px; color: #8e8e93; font-size: 14px; }
 
+    /* ---- MILESTONES ---- */
+    .ms-section { margin-bottom: 20px; }
+    .ms-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .ms-biz-label { font-size: 15px; font-weight: 800; }
+    .ms-progress-text { font-size: 12px; color: #8e8e93; margin-left: auto; }
+    .ms-track { background: #f5f5f7; border-radius: 6px; height: 6px; margin-bottom: 16px; overflow: hidden; }
+    .ms-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
+    .ms-fill-zen { background: linear-gradient(90deg, #5856d6, #a78bfa); }
+    .ms-fill-axon { background: linear-gradient(90deg, #ff3b30, #ff9500); }
+    .ms-fill-rev { background: linear-gradient(90deg, #34c759, #30d158); }
+    .ms-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      border: 1px solid #e5e5ea;
+      background: white;
+      transition: all 0.2s;
+    }
+    .ms-item.done { background: #f9f9ff; border-color: #c7c6f5; }
+    .ms-item.done .ms-title { text-decoration: line-through; color: #8e8e93; }
+    .ms-item.locked { opacity: 0.45; }
+    .ms-item.active { border-color: #5856d6; box-shadow: 0 0 0 3px #5856d622; }
+    .ms-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .ms-icon.done { background: #5856d6; color: white; }
+    .ms-icon.active { background: #fff3e0; color: #ff9500; border: 2px solid #ff9500; font-size: 11px; }
+    .ms-icon.locked { background: #f5f5f7; color: #c7c7cc; }
+    .ms-body { flex: 1; min-width: 0; }
+    .ms-title { font-size: 14px; font-weight: 600; color: #1d1d1f; margin-bottom: 3px; }
+    .ms-expect {
+      font-size: 12px;
+      color: #5856d6;
+      background: #f0f0ff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-top: 5px;
+      display: inline-block;
+    }
+    .ms-expect.hidden { display: none; }
+    .ms-claim-btn {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #5856d6;
+      background: white;
+      color: #5856d6;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .ms-date { font-size: 11px; color: #8e8e93; margin-top: 4px; }
+
     /* ---- DESKTOP OVERRIDES ---- */
     @media (min-width: 640px) {
       .content { padding: 24px 20px 40px; }
@@ -543,6 +604,7 @@
   <div class="tab" data-tab="week">Week</div>
   <div class="tab" data-tab="businesses">Bedrijven</div>
   <div class="tab" data-tab="mentor">Mentor</div>
+  <div class="tab" data-tab="milestones">Milestones</div>
   <div class="tab" data-tab="inzichten">Inzichten</div>
 </div>
 
@@ -745,6 +807,44 @@
     </div>
     <div id="memoryContent" style="font-size:13px;color:#6e6e73;">Nog geen opgeslagen inzichten. Start een gesprek met de mentor.</div>
   </div>
+
+  </div>
+
+  <!-- ===== TAB: MILESTONES ===== -->
+  <div class="panel" id="panel-milestones">
+
+    <!-- ZENBTW -->
+    <div class="card ms-section">
+      <div class="ms-header">
+        <div class="ms-biz-label">ZENBTW</div>
+        <div class="status-pill s-focus">PRIMAIR</div>
+        <div class="ms-progress-text" id="ms-zen-pct">0 / 9</div>
+      </div>
+      <div class="ms-track"><div class="ms-fill ms-fill-zen" id="ms-zen-bar" style="width:0%"></div></div>
+      <div id="ms-zen-list"></div>
+    </div>
+
+    <!-- REVALEUR -->
+    <div class="card ms-section">
+      <div class="ms-header">
+        <div class="ms-biz-label">Revaleur</div>
+        <div class="status-pill s-cash">CASHCOW</div>
+        <div class="ms-progress-text" id="ms-rev-pct">0 / 5</div>
+      </div>
+      <div class="ms-track"><div class="ms-fill ms-fill-rev" id="ms-rev-bar" style="width:0%"></div></div>
+      <div id="ms-rev-list"></div>
+    </div>
+
+    <!-- AXONGEAR -->
+    <div class="card ms-section">
+      <div class="ms-header">
+        <div class="ms-biz-label">AxonGear</div>
+        <div class="status-pill s-kill">KILL ZONE</div>
+        <div class="ms-progress-text" id="ms-axon-pct">0 / 5</div>
+      </div>
+      <div class="ms-track"><div class="ms-fill ms-fill-axon" id="ms-axon-bar" style="width:0%"></div></div>
+      <div id="ms-axon-list"></div>
+    </div>
 
   </div>
 
@@ -990,6 +1090,7 @@ if (!S.metrics) S.metrics = { zen: 0, axon: 0, revaleur: 3000 };
 if (!S.weekly) S.weekly = { contacts: 0, interested: 0 };
 if (!S.chatHistory) S.chatHistory = [];
 if (!S.startDates) S.startDates = {};
+if (!S.milestones) S.milestones = {}; // { milestoneId: dateString }
 if (!S.memory) S.memory = {
   learnings: [], decisions: [], wins: [], patterns: [], lastSummary: null,
 };
@@ -1066,6 +1167,7 @@ function init() {
   loadApiKeyUI();
   loadChatHistory();
   renderMemoryPanel();
+  renderMilestones();
 }
 
 function getTodayDayIdx() {
@@ -1629,6 +1731,90 @@ async function sendMessage() {
 }
 
 // ============ MEMORY PANEL ============
+// ============ MILESTONES ============
+const MILESTONE_DEFS = {
+  zen: [
+    { id:'zen_mvp',      title:'MVP gebouwd',                    auto: () => true,                                        expect:'Je hebt een werkend product. Nu begint het echte werk: mensen.' },
+    { id:'zen_pipeline', title:'20 namen in outreach-pipeline',  auto: () => Object.values(S.tasks).filter(Boolean).length >= 3, expect:'Je hebt brandstof voor 2 weken outreach zonder opnieuw te hoeven nadenken.' },
+    { id:'zen_10dms',    title:'10 DMs gestuurd',                manual: true,                                            expect:'Bij 10 DMs kun je 2-3 reacties verwachten. Dat is genoeg voor je eerste inzicht.' },
+    { id:'zen_reactie',  title:'Eerste positieve reactie',       manual: true,                                            expect:'Iemand is geïnteresseerd. Dit is demand-bewijs. Plan nu direct een demo.' },
+    { id:'zen_demo',     title:'Eerste demo gedaan',             manual: true,                                            expect:'Na een demo weet je meer dan na 100 uur bouwen. Verwerk feedback dezelfde dag.' },
+    { id:'zen_gratis',   title:'Eerste gratis gebruiker actief', manual: true,                                            expect:'Je hebt levend bewijs dat iemand de tool gebruikt. Vraag elke week om feedback.' },
+    { id:'zen_betaler',  title:'Eerste betalende gebruiker',     auto: () => (S.metrics?.zen || 0) >= 1,                 expect:'Hormozi: "Nu heb je een business." Elke volgende klant kost minder moeite dan de eerste.' },
+    { id:'zen_5users',   title:'5 betalende gebruikers',         auto: () => (S.metrics?.zen || 0) >= 5,                 expect:'Bij 5 gebruikers kun je pricing testen en referrals activeren.' },
+    { id:'zen_mrr100',   title:'€100 MRR',                       auto: () => (S.metrics?.zen || 0) * 20 >= 100,          expect:'Bewijs dat mensen structureel betalen. Nu pas begin je te schalen.' },
+  ],
+  revaleur: [
+    { id:'rev_3k',       title:'€3k/maand consistent',           auto: () => (S.metrics?.revaleur || 0) >= 3000,         expect:'Je cashcow draait. Focus nu op systematiseren zodat het zonder jou loopt.' },
+    { id:'rev_systeem',  title:'Systeem <5 uur/week',            manual: true,                                            expect:'Leila: je bent nu operationeel irrelevant in Revaleur. Alle tijd gaat naar ZENBTW.' },
+    { id:'rev_5k',       title:'€5k/maand',                      auto: () => (S.metrics?.revaleur || 0) >= 5000,         expect:'Revaleur financiert je ZENBTW-runway. Niet aanraken — laten draaien.' },
+    { id:'rev_freelance',title:'Freelancer/VA aangesteld',        manual: true,                                            expect:'Jij hoeft Revaleur niet meer te runnen. Alleen nog wekelijkse check van 15 min.' },
+    { id:'rev_10k',      title:'€10k/maand',                     auto: () => (S.metrics?.revaleur || 0) >= 10000,        expect:'Revaleur is een volwassen cashcow. Sanchez: "Boring businesses zijn goudmijnen."' },
+  ],
+  axon: [
+    { id:'axon_start',   title:'Demand-validatie gestart',       auto: () => !!S.tasks['ma5'] || !!S.tasks['wo5'],       expect:'Je bent nu data aan het verzamelen. Wacht niet op gevoel — wacht op cijfers.' },
+    { id:'axon_10sig',   title:'10 demand-signalen verzameld',   manual: true,                                            expect:'10 mensen zeiden "ja, dat herken ik" zonder suggestie. Dat is genoeg om ads te hervatten.' },
+    { id:'axon_100',     title:'€100 omzet',                     auto: () => (S.metrics?.axon || 0) >= 100,             expect:'Eerste bewijs van commerciële interesse. Analyseer: welke doelgroep kocht?' },
+    { id:'axon_500',     title:'€500 omzet — stop/go beslissing',auto: () => (S.metrics?.axon || 0) >= 500,             expect:'Stop-criterium gehaald. Analyseer marge en schaalbaarheid voor go/no-go.' },
+    { id:'axon_besluit', title:'Definitief go of stop besloten', manual: true,                                            expect:'Sanchez: "De domste fout is doorgaan zonder data." Keuze gemaakt = energie vrijgemaakt.' },
+  ],
+};
+
+function claimMilestone(id) {
+  if (S.milestones[id]) return;
+  S.milestones[id] = todayKey();
+  ss(S);
+  renderMilestones();
+}
+
+function renderMilestones() {
+  ['zen','revaleur','axon'].forEach(biz => {
+    const defs = MILESTONE_DEFS[biz === 'revaleur' ? 'revaleur' : biz === 'axon' ? 'axon' : 'zen'];
+    const listEl = document.getElementById('ms-' + (biz === 'revaleur' ? 'rev' : biz) + '-list');
+    const barEl  = document.getElementById('ms-' + (biz === 'revaleur' ? 'rev' : biz) + '-bar');
+    const pctEl  = document.getElementById('ms-' + (biz === 'revaleur' ? 'rev' : biz) + '-pct');
+    if (!listEl) return;
+
+    let done = 0;
+    let firstActive = true;
+    listEl.innerHTML = '';
+
+    defs.forEach((ms, i) => {
+      const isDone = !!S.milestones[ms.id] || (ms.auto && ms.auto());
+      if (isDone && !S.milestones[ms.id]) {
+        S.milestones[ms.id] = todayKey();
+        ss(S);
+      }
+      if (isDone) done++;
+
+      const prevDone = i === 0 || !!S.milestones[defs[i-1].id] || (defs[i-1].auto && defs[i-1].auto());
+      const isActive = !isDone && prevDone && firstActive;
+      if (isActive) firstActive = false;
+      const isLocked = !isDone && !isActive;
+
+      const div = document.createElement('div');
+      div.className = 'ms-item' + (isDone ? ' done' : isActive ? ' active' : ' locked');
+
+      const icon = isDone ? '✓' : isActive ? '→' : '·';
+      const iconClass = isDone ? 'done' : isActive ? 'active' : 'locked';
+
+      div.innerHTML = `
+        <div class="ms-icon ${iconClass}">${icon}</div>
+        <div class="ms-body">
+          <div class="ms-title">${ms.title}</div>
+          ${isDone ? `<div class="ms-date">Bereikt op ${S.milestones[ms.id]}</div>` : ''}
+          ${isActive ? `<div class="ms-expect">${ms.expect}</div>` : ''}
+          ${isActive && ms.manual ? `<button class="ms-claim-btn" onclick="claimMilestone('${ms.id}')">✓ Markeer als bereikt</button>` : ''}
+        </div>`;
+      listEl.appendChild(div);
+    });
+
+    const pct = Math.round((done / defs.length) * 100);
+    barEl.style.width = pct + '%';
+    pctEl.textContent = done + ' / ' + defs.length;
+  });
+}
+
 function renderMemoryPanel() {
   const el = document.getElementById('memoryContent');
   if (!el) return;
