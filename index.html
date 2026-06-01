@@ -1000,41 +1000,41 @@ localStorage.setItem('apexforge_v2', JSON.stringify(S));
 // ============ TASKS DATA ============
 const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag'];
 const TASKS = {
-  0: [ // MAANDAG — week opstarten (Hormozi: Rule of 100 + Warm Outreach Protocol)
-    { id:'ma1', text:'[30 min] HORMOZI — Warm outreach pipeline bouwen: schrijf 20 namen op van mensen die je kent of die reageerden op KOR/OSS posts. Niet pitchen. Herstel contact. Vraag: "Ken jij iemand die worstelt met BTW als marketplace-verkoper?" Referral frame, geen directe pitch.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'ma2', text:'[45 min] HORMOZI — Rule of 100: stuur vandaag 10 gepersonaliseerde DMs. Formule: [persoonlijke opener] + [re-engagement] + ["Ik bouw iets voor dit probleem. Mag ik je 10 min vragen stellen?"]. Geen copy-paste. Elke bericht anders.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'ma3', text:'[20 min] SUBY — PAS-content: schrijf één post met de formule Problem-Agitate-Solution. P: "7 op de 10 Vinted-verkopers ontdekt de KOR-drempel te laat." A: "Gemiddeld €800 aan onverwachte BTW." S: Laat ZENBTW impliciet — post eerst zonder pitch.', mentor:'suby', biz:'ZENBTW' },
-    { id:'ma4', text:'[15 min] CLEAR — Revaleur systeemcheck via habit stacking: "Na het openen van mijn laptop check ik Revaleur." Alleen ingrijpen als iets stuk is. Niet optimaliseren. Daarna stoppen.', mentor:'clear', biz:'Revaleur' },
-    { id:'ma5', text:'[20 min] SANCHEZ — AxonGear demand validatie: vraag 3 mensen fysiek "Heb je last van je arm bij het werken?" zonder product te noemen. Sanchez: "De eerste euro moet komen uit een direct gesprek met een mens." Noteer letterlijke reacties.', mentor:'cunningham', biz:'AxonGear' },
+  0: [ // MAANDAG
+    { id:'ma1', text:'30 min — Schrijf 20 namen op van mensen die je kent of reageerden op KOR/OSS posts. Vraag ze: "Ken jij iemand die worstelt met BTW als marketplace-verkoper?"', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'ma2', text:'45 min — Stuur 10 gepersonaliseerde DMs. Format: persoonlijke opener → "Ik bouw iets voor dit probleem. Mag ik je 10 min vragen stellen?" Geen copy-paste.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'ma3', text:'20 min — Schrijf één post: "7 op de 10 Vinted-verkopers ontdekt de KOR-drempel te laat. Gemiddeld €800 aan onverwachte BTW." Geen pitch, geen link. Alleen het probleem.', mentor:'suby', biz:'ZENBTW' },
+    { id:'ma4', text:'15 min — Revaleur check. Alleen ingrijpen als iets stuk is. Daarna stoppen.', mentor:'clear', biz:'Revaleur' },
+    { id:'ma5', text:'20 min — Vraag 3 mensen fysiek: "Heb je last van je arm bij het werken?" Zonder AxonGear te noemen. Noteer reacties letterlijk.', mentor:'cunningham', biz:'AxonGear' },
   ],
-  1: [ // DINSDAG — outreach verdiepen (Suby: HVCO + PAS)
-    { id:'di1', text:'[30 min] SUBY — HVCO bouwen: maak een gratis tool of PDF die voelt alsof hij €97 waard is. Idee: "KOR-drempel calculator: bereken in 3 min of jij dit jaar BTW-plichtig wordt." Dit is je lead magnet — geef het gratis weg. Mensen die het downloaden zijn warme leads.', mentor:'suby', biz:'ZENBTW' },
-    { id:'di2', text:'[30 min] SUBY — 3%-regel toepassen: post in 2 FB-groepen (Vinted NL + Etsy NL). Doel: de 40% bereiken die OPEN staat maar nog niet zoekt. Gebruik PAS-formule. Geen link naar ZENBTW — alleen het probleem beschrijven.', mentor:'suby', biz:'ZENBTW' },
-    { id:'di3', text:'[45 min] HORMOZI — Follow-up op gisteren. Nieuw bericht: "Hey [naam], misschien mijn vorige bericht onduidelijk. Ik zoek 3 mensen die gratis mijn BTW-tool willen testen in ruil voor eerlijke feedback. 15 min per week. Interesse?" Stuur naar iedereen die niet reageerde.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'di4', text:'[20 min] OVENS — ZENBTW als nieuwe gebruiker testen: open de tool en doe alsof je er nooit van hebt gehoord. Schrijf 3 dingen op die onduidelijk zijn. Dit zijn je top-3 verbeterpunten voor woensdag.', mentor:'ovens', biz:'ZENBTW' },
-    { id:'di5', text:'[15 min] CLEAR — Revaleur: "Na mijn ZENBTW-werk check ik Revaleur." Eén melding afhandelen. Systeem draait — jij niet ingrijpen tenzij iets stuk is.', mentor:'clear', biz:'Revaleur' },
+  1: [ // DINSDAG
+    { id:'di1', text:'30 min — Maak een gratis KOR-calculator of 1-pagina PDF: "Bereken in 3 min of jij dit jaar BTW-plichtig wordt." Geef gratis weg. Dit is je leadmagnet.', mentor:'suby', biz:'ZENBTW' },
+    { id:'di2', text:'30 min — Post in Vinted NL en Etsy NL FB-groep: alleen het probleem beschrijven, geen link naar ZENBTW.', mentor:'suby', biz:'ZENBTW' },
+    { id:'di3', text:'45 min — Follow-up naar iedereen die gisteren niet reageerde: "Ik zoek 3 mensen die gratis mijn BTW-tool willen testen in ruil voor feedback. 15 min/week. Interesse?"', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'di4', text:'20 min — Open ZENBTW alsof je het voor de eerste keer ziet. Schrijf 3 dingen op die onduidelijk zijn. Dit zijn de verbeterpunten voor woensdag.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'di5', text:'15 min — Revaleur: één melding afhandelen indien aanwezig. Daarna stoppen.', mentor:'clear', biz:'Revaleur' },
   ],
-  2: [ // WOENSDAG — bouwdag ZENBTW (Hormozi: Grand Slam Offer + Leila: Systeem eerst)
-    { id:'wo1', text:'[60 min] HORMOZI — Grand Slam Offer toepassen op ZENBTW: (1) Droomresultaat: "Nooit meer een BTW-verrassing." (2) Obstakel: "Ik snap OSS niet." Maak dit obstakel onderdeel van je onboarding. Implementeer vandaag één verbeterpunt uit di4.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'wo2', text:'[30 min] OVENS — Systeemcheck ZENBTW: kun jij ZENBTW volledig laten draaien zonder dat jij erbij bent? Zo nee: welke stap vereist nog jouw handmatige actie? Documenteer die stap. Leila: "Documenteer LAST — run het eerst, refine het, schrijf het dan op."', mentor:'ovens', biz:'ZENBTW' },
-    { id:'wo3', text:'[30 min] HORMOZI — 10 nieuwe DMs sturen aan mensen van je lijst die je nog niet hebt bereikt. Je zit nu in je "Rule of 100" cyclus. Niet switchen. Niet pauzeren. 100 reps eerst.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'wo4', text:'[30 min] SUBY — Finance content: lees één artikel over OSS-aangifte of KOR-wetgeving. Gebruik de 3%-regel: maak hier content van voor de 30% die "er niet aan denkt." Sla 3 feiten op als toekomstige post-hooks.', mentor:'suby', biz:'ZENBTW' },
-    { id:'wo5', text:'[20 min] SANCHEZ — AxonGear: post in r/thuiswerken of een FB-thuiswerk-groep een vraag over ergonomische pijn. Geen product noemen. Luisteren. Sanchez: "De eerste dollar is validatie — geen advertentie."', mentor:'cunningham', biz:'AxonGear' },
+  2: [ // WOENSDAG — bouwdag
+    { id:'wo1', text:'60 min — Implementeer het belangrijkste verbeterpunt van dinsdag in ZENBTW. Eén ding, volledig af, live.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'wo2', text:'30 min — Check: kan ZENBTW draaien zonder jouw handmatige actie? Zo nee: noteer welke stap dat is en hoe je die automatiseert.', mentor:'ovens', biz:'ZENBTW' },
+    { id:'wo3', text:'30 min — Stuur 10 nieuwe DMs aan mensen van je lijst die je nog niet hebt bereikt.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'wo4', text:'30 min — Lees één artikel over OSS of KOR. Noteer 3 feiten die je kunt gebruiken als content-hook volgende week.', mentor:'suby', biz:'ZENBTW' },
+    { id:'wo5', text:'20 min — Post in r/thuiswerken of FB-thuiswerk-groep een vraag over ergonomische pijn. Geen product noemen.', mentor:'cunningham', biz:'AxonGear' },
   ],
-  3: [ // DONDERDAG — conversie (Suby: Godfather Offer + Hormozi: demo-close)
-    { id:'do1', text:'[30 min] SUBY — Godfather Offer formuleren voor ZENBTW: "Gebruik ZENBTW 60 dagen gratis. Als je daarna niet precies weet waar je staat met de KOR-drempel, betaal je nooit." Schrijf dit aanbod op. Dit is wat je zegt als iemand vraagt "maar wat kost het?"', mentor:'suby', biz:'ZENBTW' },
-    { id:'do2', text:'[45 min] HORMOZI — Demo-uitnodiging sturen naar iedereen die positief reageerde deze week: "Ik heb de tool bijgewerkt. 20 min demo? Ik laat je alles zien en verwerk je feedback dezelfde dag." Hormozi: "Eerste klanten = data en bewijs, niet winst."', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'do3', text:'[20 min] SUBY — FAQ als sales-script: schrijf 5 bezwaren die je deze week het meest hoorde ("te ingewikkeld", "heb al een boekhouder", "kost geld"). Schrijf per bezwaar één PAS-antwoord. Dit is je antwoord voor elke toekomstige demo.', mentor:'suby', biz:'ZENBTW' },
-    { id:'do4', text:'[20 min] SANCHEZ — Revaleur cashflow check: welk item verkoopt het best? Bereken de SDE (winst + jouw tijd × uurtarief). Zoek 2 vergelijkbare items. Sanchez: "Een boring business dekt leningen + inkomen + operator + reserve."', mentor:'cunningham', biz:'Revaleur' },
-    { id:'do5', text:'[15 min] CLEAR — Mentor-check via habit stacking: "Na mijn avondeten open ik het Forge Mentor-tabblad." Stuur je weekresultaten. Doe wat de mentor zegt — niet nadenken, direct uitvoeren.', mentor:'clear', biz:'Algemeen' },
+  3: [ // DONDERDAG
+    { id:'do1', text:'30 min — Schrijf je aanbod op: "Gebruik ZENBTW 60 dagen gratis. Als je daarna niet weet waar je staat met de KOR-drempel, betaal je nooit." Dit is je antwoord als iemand vraagt wat het kost.', mentor:'suby', biz:'ZENBTW' },
+    { id:'do2', text:'45 min — Stuur demo-uitnodiging naar iedereen die positief reageerde: "20 min demo? Ik laat je alles zien en verwerk feedback dezelfde dag."', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'do3', text:'20 min — Schrijf 5 bezwaren die je deze week hoorde. Schrijf per bezwaar één kort antwoord op. Dit is je sales-script.', mentor:'suby', biz:'ZENBTW' },
+    { id:'do4', text:'20 min — Revaleur: welk item verkoopt het best? Zoek 2 vergelijkbare items om toe te voegen.', mentor:'cunningham', biz:'Revaleur' },
+    { id:'do5', text:'15 min — Open Mentor-tab. Stuur je resultaten van de week. Doe wat hij zegt.', mentor:'clear', biz:'Algemeen' },
   ],
-  4: [ // VRIJDAG — review + reset (alle mentoren)
-    { id:'vr1', text:'[20 min] HORMOZI — Rule of 100 voortgang: hoeveel DMs gestuurd deze week? Hoeveel reacties? Hoeveel demos? Hormozi: "Switch pas na 100 reps zonder resultaat." Ben je bij 100? Zo niet: volgende week hetzelfde kanaal, dubbele volume.', mentor:'hormozi', biz:'ZENBTW' },
-    { id:'vr2', text:'[15 min] SANCHEZ — AxonGear 90-dagen validatie: tel demand-bewijs (mensen die "ja, last van arm" zeiden zonder suggestie). Minder dan 5 in totaal? Stop-criterium nadert. Meer dan 15? Overweeg herstart ads met bewezen doelgroep.', mentor:'cunningham', biz:'AxonGear' },
-    { id:'vr3', text:'[15 min] SANCHEZ — Revaleur: omzet boven €750 deze week? Bereken SDE. Dekt het systeem zichzelf? Zo niet: één bottleneck identificeren en delegeren of automatiseren. Max 15 min — daarna loslaten.', mentor:'cunningham', biz:'Revaleur' },
-    { id:'vr4', text:'[20 min] CLEAR — Volgende week plannen via implementatie-intenties: "Op maandag om [tijd] in [locatie] stuur ik mijn eerste 10 DMs." Schrijf 3 specifieke acties op met tijd én locatie. Clear: "Implementatie-intenties verhogen de kans op uitvoering met 2-3x."', mentor:'clear', biz:'Algemeen' },
-    { id:'vr5', text:'[15 min] SUBY — Magic Lantern follow-up: stuur iedereen die deze week feedback gaf een bedankbericht + één nuttige tip over KOR/OSS die niets met ZENBTW te maken heeft. Suby: "Nurture zonder pitch — 5-7 waarde-berichten voor elk verkoopbericht."', mentor:'suby', biz:'ZENBTW' },
-    { id:'vr6', text:'[10 min] CLEAR — Identity reflectie: schrijf op welke identiteitsverklaring je deze week hebt waarggemaakt ("Ik ben iemand die elke dag outreach doet") en welke niet. Clear: "Elke actie is een stem voor de persoon die je wil worden."', mentor:'clear', biz:'Algemeen' },
+  4: [ // VRIJDAG
+    { id:'vr1', text:'20 min — Tel: hoeveel DMs gestuurd, hoeveel reacties, hoeveel demos gepland? Minder dan 3 positief → volgende week verdubbelen. Niet van kanaal wisselen.', mentor:'hormozi', biz:'ZENBTW' },
+    { id:'vr2', text:'15 min — AxonGear: tel demand-bewijs (mensen die "ja" zeiden zonder suggestie). Onder 5 totaal → stop-criterium nadert. Boven 15 → herstart ads overwegen.', mentor:'cunningham', biz:'AxonGear' },
+    { id:'vr3', text:'15 min — Revaleur: omzet boven €750? Zo niet: één bottleneck benoemen en delegeren of automatiseren. Daarna stoppen.', mentor:'cunningham', biz:'Revaleur' },
+    { id:'vr4', text:'20 min — Plan volgende week: 3 acties opschrijven met dag, tijd en locatie. Niet vager dan "maandag om 9u aan mijn bureau stuur ik 10 DMs."', mentor:'clear', biz:'Algemeen' },
+    { id:'vr5', text:'15 min — Stuur iedereen die feedback gaf een bedankbericht + één nuttige KOR/BTW-tip. Geen pitch.', mentor:'suby', biz:'ZENBTW' },
+    { id:'vr6', text:'10 min — Schrijf op: welke taak heb je deze week uitgesteld en waarom? Alleen voor jezelf.', mentor:'clear', biz:'Algemeen' },
   ],
 };
 const MENTOR_LABELS = { hormozi:'Hormozi', ovens:'Ovens', cunningham:'Cunningham', suby:'Suby', clear:'James Clear' };
