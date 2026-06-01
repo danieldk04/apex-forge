@@ -727,8 +727,8 @@
           <div class="biz-name">Revaleur</div>
           <div class="status-pill s-cash">CASHCOW</div>
         </div>
-        <div class="metric-big" id="biz-rev-num">€3k</div>
-        <div class="metric-sub">omzet / maand — doel €5k</div>
+        <div class="metric-big" id="biz-rev-num">€914</div>
+        <div class="metric-sub">omzet / maand — doel €2k</div>
         <div class="prog-track"><div class="prog-fill prog-rev" id="biz-rev-bar" style="width:60%"></div></div>
         <div class="prog-label">Max 5 uur/week. Systeem draait.</div>
         <button class="update-btn" onclick="openModal('revaleur')">Update cijfers</button>
@@ -1087,7 +1087,7 @@ let S = gs();
 if (!S.tasks) S.tasks = {};
 if (!S.daily) S.daily = {};
 if (!S.streak) S.streak = [];
-if (!S.metrics) S.metrics = { zen: 0, axon: 0, revaleur: 3000 };
+if (!S.metrics) S.metrics = { zen: 0, axon: 0, revaleur: 914 };
 if (!S.weekly) S.weekly = { contacts: 0, interested: 0 };
 if (!S.chatHistory) S.chatHistory = [];
 if (!S.startDates) S.startDates = {};
@@ -1133,7 +1133,7 @@ const TASKS = {
   4: [ // VRIJDAG
     { id:'vr1', text:'20 min — Tel: hoeveel DMs gestuurd, hoeveel reacties, hoeveel demos gepland? Minder dan 3 positief → volgende week verdubbelen. Niet van kanaal wisselen.', mentor:'hormozi', biz:'ZENBTW' },
     { id:'vr2', text:'15 min — AxonGear: tel demand-bewijs (mensen die "ja" zeiden zonder suggestie). Onder 5 totaal → stop-criterium nadert. Boven 15 → herstart ads overwegen.', mentor:'cunningham', biz:'AxonGear' },
-    { id:'vr3', text:'15 min — Revaleur: omzet boven €750? Zo niet: één bottleneck benoemen en delegeren of automatiseren. Daarna stoppen.', mentor:'cunningham', biz:'Revaleur' },
+    { id:'vr3', text:'15 min — Revaleur: omzet boven €914 (jouw gemiddelde)? Zo niet: één bottleneck benoemen. Boven €1.200? Noteer wat er anders was. Daarna stoppen.', mentor:'cunningham', biz:'Revaleur' },
     { id:'vr4', text:'20 min — Plan volgende week: 3 acties opschrijven met dag, tijd en locatie. Niet vager dan "maandag om 9u aan mijn bureau stuur ik 10 DMs."', mentor:'clear', biz:'Algemeen' },
     { id:'vr5', text:'15 min — Stuur iedereen die feedback gaf een bedankbericht + één nuttige KOR/BTW-tip. Geen pitch.', mentor:'suby', biz:'ZENBTW' },
     { id:'vr6', text:'10 min — Schrijf op: welke taak heb je deze week uitgesteld en waarom? Alleen voor jezelf.', mentor:'clear', biz:'Algemeen' },
@@ -1302,10 +1302,11 @@ function renderMetrics() {
   const m = S.metrics;
   document.getElementById('biz-zen-num').textContent = m.zen || 0;
   document.getElementById('biz-axon-num').textContent = '€' + (m.axon || 0);
-  document.getElementById('biz-rev-num').textContent = '€' + Math.round((m.revaleur || 3000) / 1000 * 10) / 10 + 'k';
+  const rv = m.revaleur || 914;
+  document.getElementById('biz-rev-num').textContent = rv >= 1000 ? '€' + (Math.round(rv / 100) / 10) + 'k' : '€' + rv;
   document.getElementById('biz-zen-bar').style.width = Math.min((m.zen || 0) * 100, 100) + '%';
   document.getElementById('biz-axon-bar').style.width = Math.min(((m.axon || 0) / 500) * 100, 100) + '%';
-  document.getElementById('biz-rev-bar').style.width = Math.min(((m.revaleur || 0) / 5000) * 100, 100) + '%';
+  document.getElementById('biz-rev-bar').style.width = Math.min((rv / 2000) * 100, 100) + '%';
 }
 
 function renderStartDates() {
@@ -1427,7 +1428,7 @@ function buildSystemPrompt() {
   return `Je bent de APEX FORGE Mentor voor Daniel (22 jaar, Finance & Control student, afstuderen augustus 2026).
 
 DANIEL'S PROFIEL:
-- Businesses: ZENBTW (BTW-tool marketplace verkopers, MVP klaar, 0 betalende gebruikers), AxonGear (dropship ergonomische armsteun, €300 spend, 0 orders, gepauzeerd), Revaleur (vintage fashion, €3k/maand, 45% marge, cashcow)
+- Businesses: ZENBTW (BTW-tool marketplace verkopers, MVP klaar, 0 betalende gebruikers), AxonGear (dropship ergonomische armsteun, €300 spend, 0 orders, gepauzeerd), Revaleur (vintage fashion, gemiddeld €914/maand, 45% marge, cashcow — niet €3k zoals eerder gedacht)
 - Kernzwakte: versnippering, analyse-paralysis, meer plannen dan uitvoeren
 - Kernkracht: analytisch, bouwer, finance-kennis, BTW/marketplace domeinkennis
 - Introvert — schriftelijke outreach werkt, cold calls niet
@@ -1746,11 +1747,11 @@ const MILESTONE_DEFS = {
     { id:'zen_mrr100',   title:'€100 MRR',                       auto: () => (S.metrics?.zen || 0) * 20 >= 100,          expect:'Bewijs dat mensen structureel betalen. Nu pas begin je te schalen.' },
   ],
   revaleur: [
-    { id:'rev_3k',       title:'€3k/maand consistent',           auto: () => (S.metrics?.revaleur || 0) >= 3000,         expect:'Je cashcow draait. Focus nu op systematiseren zodat het zonder jou loopt.' },
+    { id:'rev_1k',       title:'€1k/maand consistent',           auto: () => (S.metrics?.revaleur || 0) >= 1000,         expect:'Je zit net onder dit niveau (gem. €914). Één goede maand zet je hier over.' },
     { id:'rev_systeem',  title:'Systeem <5 uur/week',            manual: true,                                            expect:'Leila: je bent nu operationeel irrelevant in Revaleur. Alle tijd gaat naar ZENBTW.' },
-    { id:'rev_5k',       title:'€5k/maand',                      auto: () => (S.metrics?.revaleur || 0) >= 5000,         expect:'Revaleur financiert je ZENBTW-runway. Niet aanraken — laten draaien.' },
+    { id:'rev_2k',       title:'€2k/maand',                      auto: () => (S.metrics?.revaleur || 0) >= 2000,         expect:'Verdubbeling van je huidige gemiddelde. Betekent meer inkopen of hogere marges.' },
     { id:'rev_freelance',title:'Freelancer/VA aangesteld',        manual: true,                                            expect:'Jij hoeft Revaleur niet meer te runnen. Alleen nog wekelijkse check van 15 min.' },
-    { id:'rev_10k',      title:'€10k/maand',                     auto: () => (S.metrics?.revaleur || 0) >= 10000,        expect:'Revaleur is een volwassen cashcow. Sanchez: "Boring businesses zijn goudmijnen."' },
+    { id:'rev_3k',       title:'€3k/maand',                      auto: () => (S.metrics?.revaleur || 0) >= 3000,         expect:'Revaleur financiert je ZENBTW-runway volledig. Niet aanraken — laten draaien.' },
   ],
   axon: [
     { id:'axon_start',   title:'Demand-validatie gestart',       auto: () => !!S.tasks['ma5'] || !!S.tasks['wo5'],       expect:'Je bent nu data aan het verzamelen. Wacht niet op gevoel — wacht op cijfers.' },
