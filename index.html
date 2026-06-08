@@ -1084,7 +1084,7 @@ function startPolling() {
         localStorage.setItem('apexforge_v2', JSON.stringify(S));
         renderVerdict(); renderTodayTasks();
         renderDaySelector(); renderWeekTasks(activeWeekDay);
-        renderMetrics(); renderReview(); renderStreak();
+        renderMetrics(); renderFunnel(); renderReview(); renderStreak();
         setSyncStatus('ok');
       }
     } catch(e) {}
