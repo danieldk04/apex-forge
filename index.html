@@ -1331,6 +1331,35 @@ function renderMetrics() {
   document.getElementById('biz-rev-bar').style.width = Math.min((rv / 2000) * 100, 100) + '%';
 }
 
+function renderFunnel() {
+  const f = S.funnel || {};
+  ['dms','replies','demos','interest'].forEach(k => {
+    const el = document.getElementById('fn-' + k);
+    const inp = document.getElementById('fi-' + k);
+    if (el) el.textContent = f[k] || 0;
+    if (inp) inp.value = f[k] || 0;
+  });
+  // Funnel insight
+  const el = document.getElementById('funnel-insight');
+  if (!el) return;
+  const dms = f.dms || 0, rep = f.replies || 0, demos = f.demos || 0, int = f.interest || 0;
+  if (dms === 0) { el.textContent = 'Nog geen DMs verstuurd. Begin hier. Stuur vandaag 10.'; return; }
+  const replyRate = dms > 0 ? Math.round((rep/dms)*100) : 0;
+  const demoRate = rep > 0 ? Math.round((demos/rep)*100) : 0;
+  if (replyRate < 10) el.textContent = replyRate + '% reply rate. Hormozi: je bericht is te generiek. Personaliseer de opener — noem iets specifieks over die persoon.';
+  else if (demos === 0) el.textContent = replyRate + '% reply rate. Goed. Nu doorvragen naar een demo. Stuur: "Mag ik je 15 min laten zien wat ik bouw?"';
+  else if (int === 0) el.textContent = demos + ' demos gedaan, nog 0 interesse. Vraag direct: "Als dit beschikbaar was voor €X/maand — zou je het gebruiken?"';
+  else el.textContent = int + ' mensen zeiden "ja". Omzet volgt. Vraag nu naar pre-payment: "Wil je je plek reserveren?"';
+}
+
+function updateFunnel(key, val) {
+  if (!S.funnel) S.funnel = { dms: 0, replies: 0, demos: 0, interest: 0 };
+  S.funnel[key] = parseInt(val) || 0;
+  renderFunnel();
+  renderVerdict();
+  ss(S);
+}
+
 function renderStartDates() {
   if (S.startDates.zen) document.getElementById('zen-start-input').value = S.startDates.zen;
   if (S.startDates.axon) document.getElementById('axon-start-input').value = S.startDates.axon;
