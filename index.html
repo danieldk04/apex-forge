@@ -732,23 +732,46 @@
       </div>
     </div>
 
+    <!-- ZENBTW FUNNEL TRACKER -->
     <div class="card">
-      <div class="card-title">Stop-criteria — deadlines</div>
+      <div class="card-title">ZENBTW — outreach funnel</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">
+        <div style="text-align:center;">
+          <div style="font-size:26px;font-weight:800;color:#5856d6;" id="fn-dms">0</div>
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:6px;">DMs verstuurd</div>
+          <input type="number" min="0" style="width:100%;border:1px solid #e5e5ea;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;" placeholder="0" oninput="updateFunnel('dms',this.value)" id="fi-dms" />
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:26px;font-weight:800;color:#007aff;" id="fn-replies">0</div>
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:6px;">Reacties</div>
+          <input type="number" min="0" style="width:100%;border:1px solid #e5e5ea;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;" placeholder="0" oninput="updateFunnel('replies',this.value)" id="fi-replies" />
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:26px;font-weight:800;color:#ff9500;" id="fn-demos">0</div>
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:6px;">Demos</div>
+          <input type="number" min="0" style="width:100%;border:1px solid #e5e5ea;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;" placeholder="0" oninput="updateFunnel('demos',this.value)" id="fi-demos" />
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:26px;font-weight:800;color:#34c759;" id="fn-interest">0</div>
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:6px;">"Wil ik betalen"</div>
+          <input type="number" min="0" style="width:100%;border:1px solid #e5e5ea;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;" placeholder="0" oninput="updateFunnel('interest',this.value)" id="fi-interest" />
+        </div>
+      </div>
+      <div id="funnel-insight" style="font-size:13px;color:#5856d6;background:#f0f0ff;border-radius:8px;padding:10px 12px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Stop-criteria — deadline</div>
       <div class="stop-grid">
-        <div class="stop-card">
+        <div class="stop-card" style="background:#fff0f0; border-color:#ffd7d7;">
           <div class="stop-biz">AxonGear</div>
-          <div class="stop-rule">Geen €500 omzet in 4 weken na ads start</div>
-          <div class="stop-date" id="axon-deadline-biz">Vul startdatum in hierboven</div>
+          <div class="stop-rule">Op pauze — geen actie tot ZENBTW op schema</div>
+          <div class="stop-date" style="color:#8e8e93;">Herstart pas na eerste ZENBTW-gebruiker</div>
         </div>
         <div class="stop-card">
           <div class="stop-biz">ZENBTW</div>
           <div class="stop-rule">Geen betalende gebruiker in 8 weken na outreach start</div>
           <div class="stop-date" id="zen-deadline-biz">Vul startdatum in hierboven</div>
-        </div>
-        <div class="stop-card" style="background:#fff8e1; border-color:#fde68a;">
-          <div class="stop-biz" style="color:#92400e;">Nieuw idee</div>
-          <div class="stop-rule">Geen demand bewijs in 4 weken voor &lt;€500 → Later-lijst</div>
-          <div class="stop-date" style="color:#92400e;">Altijd</div>
         </div>
       </div>
     </div>
