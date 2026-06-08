@@ -1110,6 +1110,7 @@ if (!S.milestones) S.milestones = {}; // { milestoneId: dateString }
 if (!S.memory) S.memory = {
   learnings: [], decisions: [], wins: [], patterns: [], lastSummary: null,
 };
+if (!S.funnel) S.funnel = { dms: 0, replies: 0, demos: 0, interest: 0 };
 // Save defaults to localStorage only — do NOT push to Supabase yet
 // syncPull() will run first and remote state wins
 localStorage.setItem('apexforge_v2', JSON.stringify(S));
