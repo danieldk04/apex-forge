@@ -707,20 +707,17 @@
           <input type="date" id="zen-start-input" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:13px;width:100%;" onchange="saveStartDate('zen', this.value)" />
         </div>
       </div>
-      <div class="biz-card">
+      <div class="biz-card" style="opacity:0.55; pointer-events:none; position:relative;">
+        <div style="position:absolute;top:10px;right:10px;background:#8e8e93;color:white;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:20px;">ON HOLD</div>
         <div class="biz-header">
-          <div class="biz-name">AxonGear</div>
-          <div class="status-pill s-kill">KILL ZONE</div>
+          <div class="biz-name" style="color:#8e8e93;">AxonGear</div>
         </div>
-        <div class="metric-big" id="biz-axon-num">€0</div>
-        <div class="metric-sub">omzet — doel €500</div>
-        <div class="prog-track"><div class="prog-fill prog-axon" id="biz-axon-bar" style="width:0%"></div></div>
-        <div class="prog-label">€300 spend. Ads gepauzeerd.</div>
-        <button class="update-btn" onclick="openModal('axon')">Update cijfers</button>
-        <div style="margin-top:10px;">
-          <div style="font-size:11px;color:#8e8e93;margin-bottom:4px;">Ads gestart op:</div>
-          <input type="date" id="axon-start-input" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:13px;width:100%;" onchange="saveStartDate('axon', this.value)" />
-        </div>
+        <div class="metric-big" style="color:#8e8e93;" id="biz-axon-num">€0</div>
+        <div class="metric-sub">gepauzeerd — geen actie vereist</div>
+        <div class="prog-track"><div class="prog-fill" style="background:#c7c7cc;" id="biz-axon-bar" style="width:0%"></div></div>
+        <div class="prog-label">Herstart alleen als ZENBTW op schema ligt.</div>
+        <div style="margin-top:10px;font-size:12px;color:#8e8e93;">€300 spend. 0 orders. Gepauzeerd.</div>
+        <input type="date" id="axon-start-input" style="display:none;" onchange="saveStartDate('axon', this.value)" />
       </div>
       <div class="biz-card">
         <div class="biz-header">
