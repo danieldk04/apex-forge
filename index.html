@@ -1713,7 +1713,8 @@ async function sendMessage() {
   const today = todayKey();
   const dailyDone = Object.values(S.daily[today] || {}).filter(Boolean).length;
   const weekDone = Object.values(S.tasks).filter(Boolean).length;
-  const contextNote = `[Live context — ${today}: ZENBTW=${m.zen||0} gebruikers, AxonGear=€${m.axon||0} omzet, Revaleur=€${m.revaleur||3000}/maand, ZENBTW contacten week=${S.weekly.contacts||0}, geïnteresseerden=${S.weekly.interested||0}, dagelijkse taken gedaan=${dailyDone}/2, taken week afgevinkt=${weekDone}]`;
+  const f = S.funnel || {};
+  const contextNote = `[Live context — ${today}: ZENBTW=${m.zen||0} gebruikers, ZENBTW funnel: ${f.dms||0} DMs → ${f.replies||0} reacties → ${f.demos||0} demos → ${f.interest||0} interesse, AxonGear=ON HOLD, Revaleur=€${m.revaleur||914}/maand, taken week afgevinkt=${weekDone}]`;
   const fullText = contextNote + '\n' + text;
 
   addMessageUI('user', text);
