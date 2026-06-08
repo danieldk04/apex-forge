@@ -1225,10 +1225,16 @@ function todayKey() { return new Date().toISOString().split('T')[0]; }
 function renderVerdict() {
   const m = S.metrics;
   let parts = [];
-  if (!m.zen || m.zen === 0) parts.push('ZENBTW: stuur vandaag 5 DM\'s. Geen ads, geen bouwen — mensen aanschrijven.');
-  else parts.push('ZENBTW: ' + m.zen + ' gebruiker(s). Volgende: 5 gebruikers, focus retentie + feedback.');
-  if (m.axon < 500) parts.push('AxonGear: ads gepauzeerd. Geen euro meer tot demand bewijs van echte mensen.');
-  else parts.push('AxonGear: €' + m.axon + ' — stop/go beslissing maken op marge + schaalbaarheid.');
+  const f = S.funnel || {};
+  if (!m.zen || m.zen === 0) {
+    const dms = f.dms || 0;
+    if (dms === 0) parts.push('ZENBTW: vandaag 10 DMs sturen. Lijst maken en beginnen.');
+    else if (dms < 30) parts.push('ZENBTW: ' + dms + ' DMs verstuurd. Doorgaan tot 50. Tempo omhoog.');
+    else parts.push('ZENBTW: ' + dms + ' DMs, ' + (f.replies||0) + ' reacties, ' + (f.demos||0) + ' demos. Drang op demos — vraag expliciet om een demo-gesprek.');
+  } else {
+    parts.push('ZENBTW: ' + m.zen + ' gebruiker(s). Volgende: 5. Focus op retentie + feedback + doorverwijzingen.');
+  }
+  parts.push('AxonGear: ON HOLD — geen actie.');
   parts.push('Revaleur: max 30 min vandaag. Systeem checken, niet optimaliseren.');
   document.getElementById('verdictText').textContent = parts.join('  ·  ');
 }
